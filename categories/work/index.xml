@@ -1,23 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Work on 一间茅庐</title>
-    <link>https://victoratmaoludotone.github.io/categories/work/</link>
-    <description>Recent content in Work on 一间茅庐</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Wed, 12 Aug 2015 12:58:02 +0800</lastBuildDate>
-    
-	<atom:link href="https://victoratmaoludotone.github.io/categories/work/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-    <item>
-      <title>房产中介公司向互联网转型之痛</title>
-      <link>https://victoratmaoludotone.github.io/posts/problems-in-real-estate-angency-using-dotcom/</link>
-      <pubDate>Wed, 12 Aug 2015 12:58:02 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/problems-in-real-estate-angency-using-dotcom/</guid>
-      <description>先是过敏，接着脚伤了，接着咳嗽、发烧，快好的时候又突然演变为支气管炎，直到今日还没完全好。
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Work on 一间茅庐</title><link>https://victoratmaoludotone.github.io/categories/work/</link><description>Recent content in Work on 一间茅庐</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 12 Aug 2015 12:58:02 +0800</lastBuildDate><atom:link href="https://victoratmaoludotone.github.io/categories/work/index.xml" rel="self" type="application/rss+xml"/><item><title>房产中介公司向互联网转型之痛</title><link>https://victoratmaoludotone.github.io/posts/problems-in-real-estate-angency-using-dotcom/</link><pubDate>Wed, 12 Aug 2015 12:58:02 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/problems-in-real-estate-angency-using-dotcom/</guid><description>先是过敏，接着脚伤了，接着咳嗽、发烧，快好的时候又突然演变为支气管炎，直到今日还没完全好。
 不过，与身体的病痛相比，内心的煎熬才是更痛苦的。中介行业是个非常落后的行业，从业人员的素质也极其低下。其实谈用户的绝对素质，并非比之前的行业差多少。更为重要的是，团队中的其他成员也很少有具备与工作岗位匹配的能力。在这样的团队中，产品经理的压力非常大。因为其他成员很难理解一些非常简单的常识，更缺少很多基本的工作方法，短板缺少的，都需要产品来带。
 一、运营 目前团队的运营主要存在3个问题。
 首先，运营人员完全沦为了客服。每天的大部分工作时间在接听电话，与客户沟通。不可否认，与客户沟通非常重要，但更多的应当由客服人员来处理这些问题。运营人员在这种事情上投入过大是完完全全的舍本逐末。退一步说，假定就是客服的定位，那这份工作也没有做好。不会收集客户的有效信息，进而分析客户遇到的问题并提出解决方案。仅仅直接把客户的反馈转发到产品和研发侧是很不负责任的做法。
@@ -30,16 +11,7 @@
 目前公司产品线过长可能就是转型的恶果。互联网讲究单点突破，然后再逐步扩张。但从传统行业转型的公司可能很难理解这一点。取而代之的，是每个都想做，但最终拿不出一个拳头产品来打市场。一方面，一堆的网站和APP让用户无所适从；另一方面，这种公司本身的研发实力较弱，技术也更为落后，生产力低下，在这种情况下还要面对大量的项目，质量很难保证，每个项目的进度也非常慢。
 在管理方面，转型也存在很大的问题。拍脑袋就不说了，更严重的是大规模的拍脑袋会议，从高管到普通员工在同一场低效率会议中，现场拍脑袋下决策。对「模式」的痴迷可能是导致高层经常召集各种规模会议的源动力，但再好的「模式」也需要落地，不如多关注下产品的落地。连金融这种未来的利润点都能交给外包做，这种会议决策能力可见一斑。
 传统公司往互联网转型不仅仅是成立一个互联网部门而已。需要整个公司的所有部门都努力拥抱互联网，学习之前不理解不明白的内容。举个例子，接入第三方支付，这种内容不仅是产品开发能走完整个流程的，财务部门也需要了解清楚如何对账，充值提款是什么样的流程。这些对于传统企业的财务人员要求可能比较高，却又是不得不走的一步。
-最后，移动端是未来，去节点化是未来。希望不要走错路。</description>
-    </item>
-    
-    <item>
-      <title>选择第三方支付服务商的两个角度</title>
-      <link>https://victoratmaoludotone.github.io/posts/two-aspect-for-choosing-payments-provider/</link>
-      <pubDate>Mon, 12 Jan 2015 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/two-aspect-for-choosing-payments-provider/</guid>
-      <description>从用户的角度：简单又个性 1.验证要素简单 最主要的是要解决预留手机号问题。信用卡和借记卡的在线支付所需要的要素已经有了固定的模式，信用卡需要卡号、有效期、卡片背面后三位数字、柜台预留手机号，借记卡只需要卡号和柜台预留手机号码。验证完这些信息之后，只需要输入短信验证码即可完成支付。在这些标准化信息中，难就难在柜台预留手机号这一项，对于借记卡用户来说，这个号码很可能与正在用户正在使用的手机号不同，甚至与用户接受银行提醒信息的手机号码不同。柜台预留手机号是最近几年才在用户开卡时进行明确提示的，这个信息成了借记卡支付的拦路虎。目前市场上目前只有广州易联支付不需要柜台预留手机号也能支付成功。
+最后，移动端是未来，去节点化是未来。希望不要走错路。</description></item><item><title>选择第三方支付服务商的两个角度</title><link>https://victoratmaoludotone.github.io/posts/two-aspect-for-choosing-payments-provider/</link><pubDate>Mon, 12 Jan 2015 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/two-aspect-for-choosing-payments-provider/</guid><description>从用户的角度：简单又个性 1.验证要素简单 最主要的是要解决预留手机号问题。信用卡和借记卡的在线支付所需要的要素已经有了固定的模式，信用卡需要卡号、有效期、卡片背面后三位数字、柜台预留手机号，借记卡只需要卡号和柜台预留手机号码。验证完这些信息之后，只需要输入短信验证码即可完成支付。在这些标准化信息中，难就难在柜台预留手机号这一项，对于借记卡用户来说，这个号码很可能与正在用户正在使用的手机号不同，甚至与用户接受银行提醒信息的手机号码不同。柜台预留手机号是最近几年才在用户开卡时进行明确提示的，这个信息成了借记卡支付的拦路虎。目前市场上目前只有广州易联支付不需要柜台预留手机号也能支付成功。
 2.支付流程简洁 在今年以前，大部分的第三方支付流程中还需要用户手动选择银行卡类型，如今已经不再需要。原因是目前很多第三方支付已经提供了卡Bin查询接口，可根据用户输入的卡号来自动识别发卡行。但大部分第三方支付不愿意把这个接口暴露给商户，商户如果设计了卡前置类型（商户端绑卡）的流程，则无法让用户免除这一步。目前我接触到的能提供卡Bin查询接口供商户调用的第三方支付服务商只有杭州连连支付。
 总之，能帮用户解决的就不需要自己输入，“别让我思考”。
 3.个性化需求 二次支付：一般来说，目前二次支付的验证信息都比较简单，收短信输入验证码即可。有没有更简单的方式呢？广州易联支付的认证快付和杭州连连支付的小额免密可能是未来的发展方向之一。小额免密暂时还没有接入，但是认证快付我们已经尝试过。这两种功能都是让用户在二次支付的时候直接完成支付，无需密码，无需验证。但对应的风控和用户提示一定要做好。
@@ -49,8 +21,4 @@
 目前更流行的模式是按金额收费，一般是千分之五。商户通常更喜欢这种收费模式，因为利润率一般是远大于千分之五的，这样就不必设置最低充值限额，降低用户的首次充值成本。
 3.沟通渠道通畅，内容有价值 电话是一种沟通渠道，但略显呆板，对于较大量的互动也力不从心。目前常见的是使用QQ群沟通，双方的产品、技术、客服都在其中，任何一方有问题随时提出随时解决。也可以使用单独的客服沟通群，降低对其他人的干扰。
 对于稍有经验的第三方支付服务商来说，都会给商户提供常规交易数据，包括人数、次数、金额、成功率、失败原因等。商户可以从失败原因中找到改进的方式。但能否更进一步，如果第三方支付服务商能站在商户和用户角度来体验流程，给商户提供直接的指导会更好。特别是一些小的商户，他们急需这种服务。
-一点总结 目前在基础的流程上，各种第三方支付服务商基本无差别。想要抓住商户，提高市场占有率，需要更多的从服务上下手，比如对用户的失败回访、对商户的流程改进建议等等。</description>
-    </item>
-    
-  </channel>
-</rss>
+一点总结 目前在基础的流程上，各种第三方支付服务商基本无差别。想要抓住商户，提高市场占有率，需要更多的从服务上下手，比如对用户的失败回访、对商户的流程改进建议等等。</description></item></channel></rss>

@@ -1,226 +1,88 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Posts on 一间茅庐</title>
-    <link>https://victoratmaoludotone.github.io/posts/</link>
-    <description>Recent content in Posts on 一间茅庐</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Tue, 16 Jun 2020 11:16:23 +0800</lastBuildDate>
-    
-	<atom:link href="https://victoratmaoludotone.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-    <item>
-      <title>使用 rsync 备份群晖资料到 VPS</title>
-      <link>https://victoratmaoludotone.github.io/posts/backup-synogy-to-vps-using-rsync/</link>
-      <pubDate>Tue, 16 Jun 2020 11:16:23 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/backup-synogy-to-vps-using-rsync/</guid>
-      <description>虽然家里的群晖做了 RAID 1，但看到有帖子说有人家里火灾导致 NAS 的热备份和硬盘的冷备份全部丢失，再加上最近在家赋闲，又想着折腾一番。
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on 一间茅庐</title><link>https://victoratmaoludotone.github.io/posts/</link><description>Recent content in Posts on 一间茅庐</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 16 Jun 2020 11:16:23 +0800</lastBuildDate><atom:link href="https://victoratmaoludotone.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>使用 rsync 备份群晖资料到 VPS</title><link>https://victoratmaoludotone.github.io/posts/backup-synogy-to-vps-using-rsync/</link><pubDate>Tue, 16 Jun 2020 11:16:23 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/backup-synogy-to-vps-using-rsync/</guid><description>虽然家里的群晖做了 RAID 1，但看到有帖子说有人家里火灾导致 NAS 的热备份和硬盘的冷备份全部丢失，再加上最近在家赋闲，又想着折腾一番。
 一、为什么要使用 VPS 作为备份目的地 首先，我需要 500GB 以上的存储容量。市面上有很多选择，比如：
- 大公司做个人和企业云存储的服务，例如 Microsoft OneDrive（1TB $69.99/年）、Google One（2 TB $100/年） 等； 文件同步备份类型，如 Dropbox（2TB $119.88/年） 等； 小公司专业做备份的，如 CrashPlan（无限容量 $120/年） 等； 云计算公司的对象存储，如亚马逊和阿里巴巴对象存储等，此类存储空间、进出流量、请求次数都要收费，仅计算存储空间费用，以阿里巴巴为例，500GB 的存储空间一年就需要 $70.2。  大部分服务对于我来说太贵了，因为他们提供了更多的价值，例如版本控制，或者数不清几个 9 的服务保证。而我不想为这些额外的功能付费。唯一价格不错的，是 Onedrive。但群晖的 CloudSync 对 Onedrive 的支持似乎有问题，目前我尚未解决此问题，似乎与账号有关。若能找到 6 个人合买 Microsoft 365，那价格的优势就很大（特别是，如果你选择中国区的话），显然我也有动力全力解决此问题。（已确认是账号问题，更换账号后能关联账户，但测试了一下速度只有几百 KB/s，所以暂时不考虑。）
+大公司做个人和企业云存储的服务，例如 Microsoft OneDrive（1TB $69.99/年）、Google One（2 TB $100/年） 等； 文件同步备份类型，如 Dropbox（2TB $119.88/年） 等； 小公司专业做备份的，如 CrashPlan（无限容量 $120/年） 等； 云计算公司的对象存储，如亚马逊和阿里巴巴对象存储等，此类存储空间、进出流量、请求次数都要收费，仅计算存储空间费用，以阿里巴巴为例，500GB 的存储空间一年就需要 $70.2。 大部分服务对于我来说太贵了，因为他们提供了更多的价值，例如版本控制，或者数不清几个 9 的服务保证。而我不想为这些额外的功能付费。唯一价格不错的，是 Onedrive。但群晖的 CloudSync 对 Onedrive 的支持似乎有问题，目前我尚未解决此问题，似乎与账号有关。若能找到 6 个人合买 Microsoft 365，那价格的优势就很大（特别是，如果你选择中国区的话），显然我也有动力全力解决此问题。（已确认是账号问题，更换账号后能关联账户，但测试了一下速度只有几百 KB/s，所以暂时不考虑。）
 我选择的 Alpha VPS，位于保加利亚，1 TB 存储空间，每月 3TB 流量，每年只需要 60 欧元（约 $68）。如果选择更低的容量，则价格会更便宜。虽然 VPS 完全是裸机，没有附加功能（除非你愿意去学习一些软件的配置），但因为有 RAID 1 和移动硬盘的冷备份，对安全性要求没那么高，所以对于单纯的异地备份来说已经够用了。经过一天的测试，上传速度有 1.x MB/S，已经超过我的预期了，毕竟服务器在保加利亚那么遥远的地方。
 二、如何在群晖上创建备份文件 为了存取方便，需要将每个图片文件夹分别打包，这样上传和下载都比较方便。但我之前的目录命名中有一些有空格，用脚本处理起来有些困难。所以就有了本文中两段小脚本。
 批量移除文件名中的空格：
-for loop in ls -1 | tr &amp;#39; &amp;#39; &amp;#39;#&amp;#39; do mv &amp;#34;echo $loop| sed &amp;#39;s/#/ /g&amp;#39;&amp;#34; &amp;#34;echo $loop|sed &amp;#39;s/#//g&amp;#39;&amp;#34; 2&amp;gt; /dev/null done 然后再使用 tar 将目录分别打包即可：</description>
-    </item>
-    
-    <item>
-      <title>不知道是第几次重新开始</title>
-      <link>https://victoratmaoludotone.github.io/posts/start-again/</link>
-      <pubDate>Sun, 14 Jun 2020 10:20:41 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/start-again/</guid>
-      <description>最近几个月赋闲在家，家里有老人，我只是帮着带娃，所以空闲时间也挺多的。饱暖思淫欲，空虚爱消费。所以在这几个月里，我又买了一些域名和 VPS。到现在总结一下，发现就像最近很火的「摆摊经济」一样，大部分都是「白给」。
+for loop in ls -1 | tr &amp;#39; &amp;#39; &amp;#39;#&amp;#39; do mv &amp;#34;echo $loop| sed &amp;#39;s/#/ /g&amp;#39;&amp;#34; &amp;#34;echo $loop|sed &amp;#39;s/#//g&amp;#39;&amp;#34; 2&amp;gt; /dev/null done 然后再使用 tar 将目录分别打包即可：</description></item><item><title>不知道是第几次重新开始</title><link>https://victoratmaoludotone.github.io/posts/start-again/</link><pubDate>Sun, 14 Jun 2020 10:20:41 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/start-again/</guid><description>最近几个月赋闲在家，家里有老人，我只是帮着带娃，所以空闲时间也挺多的。饱暖思淫欲，空虚爱消费。所以在这几个月里，我又买了一些域名和 VPS。到现在总结一下，发现就像最近很火的「摆摊经济」一样，大部分都是「白给」。
 今年 32 岁，接触互联网已经有 20 年了，却什么都没留下，大部分只是重复的折腾，所谓：无事找事做，一事反复做。虽然有人说「或者就是折腾」，但总还是心存遗憾。上个月想着维护两个博客，一个针砭时弊，放浪形骸，不得见人的；另一个比较「正经」，稍微职业化一些的。目前也是这种格局，但将真实姓名隐去会更适合我一些。所以昨晚又注册了这个域名，搭建了博客。
 「一间茅庐」源自三国时期的「三顾茅庐」。给儿子起名字的时候，引用了诸葛亮《戒子书》中的「非淡泊无以明志，非宁静无以致远」，所以在确定域名的时候，就想到了诸葛亮；后又想到刘禹锡《陋室铭》中的「斯是陋室，惟吾德馨」一段。只可惜缺少才华，无法「谈笑有鸿儒」，只能取「苔痕上阶绿，草色入帘青」这一美好意象作为副标题了。我无法拒绝这种清新中产阶级农村的景象，所以 QQ 签名也一度是「城中桃李愁风雨，春在溪头荠菜花」这种句子。但一想到农村糟糕的基础设施，就勾起了我遥远而痛苦的回忆。然而，在我还在农村的时候，并没有感觉到很不方便。
 本周去了两次市图书馆。第一天是中午时候去的，馆中没有空位了。有在学习的，有占座的，也有在玩手机的。第二天在早上九点左右到，期待着能找到一个座位，但刚到图书馆门口就震惊了：排队九曲十八弯，已经有数百人了。等我停好车，排完队进入馆内，很显然已经没有我的位置了，只能回家，从此断绝了去图书馆学习的念头。付费自习室的话，加上停车费，总成本又过高。所以只能在家中娱乐。
 在图书馆的时候，读了数页曼施坦因的《失去的胜利》。虽然只读了 105 页，但其中有些内容，也值得思考：
-  比如评价波兰的迅速崩溃，「换言之，它在开战时，不分散其所有的一切资源，企图守住它所不能守住的东西，反之却能集中其力量于要点之上，并为了争取必要的时间，而有系统地战斗」，这一评价是具有普遍价值的，可以推演至企业或产品的成败，上一个产品的失败原因与波兰的部署是相似的。
-  「如果陆军总司令部想要对战争的总体指导发挥影响，它就必须对这个问题提出一个满意的答案」这部分，对员工如何产生对领导的影响力，也是极具现实意义的。
-  另外，「这个例证只不过是再次证明，即使没有任何的正当理由，计划的执行也总还是难于完全符合其最初设计者的理想。」也能反映项目管理及项目进度上的问题所在。
-  不过回到家后，在网上又读了几页后还是中断了。无法坚持，好逸恶劳的老毛病了。</description>
-    </item>
-    
-    <item>
-      <title>2020 生活与工作流水账 04</title>
-      <link>https://victoratmaoludotone.github.io/posts/2020-life-work-notes-04/</link>
-      <pubDate>Fri, 29 May 2020 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/2020-life-work-notes-04/</guid>
-      <description>这么快就五月底了，我还是没有去找工作。不知道是畏惧工作，还是畏惧找不到工作。我一直觉得这些年都是混过来的，没有什么特殊的本领，干的也都是一些苦力活，并不具备什么创造性能力。我也时常安慰自己，大部分人的工作都是很普通的工作，大部人的人也都是普通人而已。前几天在抖音上又回顾了《士兵突击》，让我又想起了许三多的那句话：有意义的事儿就是好好活，好好活就是做有意义的事儿。那我，有好好活吗？
+比如评价波兰的迅速崩溃，「换言之，它在开战时，不分散其所有的一切资源，企图守住它所不能守住的东西，反之却能集中其力量于要点之上，并为了争取必要的时间，而有系统地战斗」，这一评价是具有普遍价值的，可以推演至企业或产品的成败，上一个产品的失败原因与波兰的部署是相似的。
+「如果陆军总司令部想要对战争的总体指导发挥影响，它就必须对这个问题提出一个满意的答案」这部分，对员工如何产生对领导的影响力，也是极具现实意义的。
+另外，「这个例证只不过是再次证明，即使没有任何的正当理由，计划的执行也总还是难于完全符合其最初设计者的理想。」也能反映项目管理及项目进度上的问题所在。
+不过回到家后，在网上又读了几页后还是中断了。无法坚持，好逸恶劳的老毛病了。</description></item><item><title>2020 生活与工作流水账 04</title><link>https://victoratmaoludotone.github.io/posts/2020-life-work-notes-04/</link><pubDate>Fri, 29 May 2020 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/2020-life-work-notes-04/</guid><description>这么快就五月底了，我还是没有去找工作。不知道是畏惧工作，还是畏惧找不到工作。我一直觉得这些年都是混过来的，没有什么特殊的本领，干的也都是一些苦力活，并不具备什么创造性能力。我也时常安慰自己，大部分人的工作都是很普通的工作，大部人的人也都是普通人而已。前几天在抖音上又回顾了《士兵突击》，让我又想起了许三多的那句话：有意义的事儿就是好好活，好好活就是做有意义的事儿。那我，有好好活吗？
 昨晚在某 BBS 上看到一个人搭建的传奇类页游私服，本来是想着看看是什么的，没想到居然从昨天中午一直玩到了现在。因为每天送 5000 万元宝，所以除了最顶级套装不能一次买齐之外，别的都可以消费，顿时体验到了有钱人的快乐。以前一直不明白为什么有人喜欢玩这种游戏，还往里面充钱，现在明白了，快乐就是这么简单。有钱人的快乐，往往就是这么朴实无华，且枯燥。毕竟如果没有自动按键类的应用，鼠标应该已经按坏了。
 最近做了两个网站。第一个是想介绍 Mac 上的优质应用的。后来发现这样的话受众群体太小，后来就又做了一个苹果资讯站。后面还申请了头条号和微信公众号。但当我前几天投递 cnbeta 的时候，才发现国内这些做苹果资讯的站点来源都一样。如果没有差异化的内容，个人怎么能做得过团队呢？最简单的，从更新时间来说，我几乎是一有推送就开始翻译并发布，但大部分资讯发出来的时候还是比他们晚。一方面是他们很多都只是截取个概要就发出来，另一方面就是对方人手更多一些。所以我突然又不想做了。
 前段时间又看了《老友记》前几季，也是陆陆续续看的。边看我就边想，为什么我以前没看这部剧呢？场景和角色上看，《生活大爆炸》与《老友记》有比较明显的相似性，我很喜欢看《生活大爆炸》，但我记得当年看《老友记》看了一会儿觉的没什么意思。
-在家玩了挺久了，得去上班了。</description>
-    </item>
-    
-    <item>
-      <title>解决 Lean 固件编译后无 SSR-Plus 的问题</title>
-      <link>https://victoratmaoludotone.github.io/posts/add-ssr-plus-in-lean-openwrt-firmware/</link>
-      <pubDate>Tue, 19 May 2020 12:43:21 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/add-ssr-plus-in-lean-openwrt-firmware/</guid>
-      <description>在最近的更新后，Lean 源码中删除了 SSR Plus + 功能模块。在编译路由器固件过程中，进入 Luci-Application 菜单后，找不到 luci-app-ssr-plus 选项，当然也就无法编译这一模块。
+在家玩了挺久了，得去上班了。</description></item><item><title>解决 Lean 固件编译后无 SSR-Plus 的问题</title><link>https://victoratmaoludotone.github.io/posts/add-ssr-plus-in-lean-openwrt-firmware/</link><pubDate>Tue, 19 May 2020 12:43:21 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/add-ssr-plus-in-lean-openwrt-firmware/</guid><description>在最近的更新后，Lean 源码中删除了 SSR Plus + 功能模块。在编译路由器固件过程中，进入 Luci-Application 菜单后，找不到 luci-app-ssr-plus 选项，当然也就无法编译这一模块。
 如果是初次编译，git clone 完成后，修改 feeds.conf.default 文件，将：
 # src-git helloworld https://github.com/fw876/helloworld 前面的 # 去掉，修改为：
 src-git helloworld https://github.com/fw876/helloworld 再进行 make menuconfig 等命令进行编译即可。
 如果是二次编译，则执行以下命令：
 $ git pull $ rm -rf ./tmp &amp;amp;&amp;amp; rm -rf .config 再编辑 feeds.config.default 文件，将 helloworld 一行前的 # 去掉。然后更新 feeds：
-$ ./scripts/feeds clean $ ./scripts/feeds update -a &amp;amp;&amp;amp; ./scripts/feeds install -a 再进行 make menuconfig 等命令进行编译即可。</description>
-    </item>
-    
-    <item>
-      <title>2020 生活与工作流水账 03</title>
-      <link>https://victoratmaoludotone.github.io/posts/2020-life-work-notes-03/</link>
-      <pubDate>Wed, 13 May 2020 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/2020-life-work-notes-03/</guid>
-      <description>拒绝回原公司的 Offer 后，一直没想着找工作。总是觉得很疲惫，对上班有一种倦怠感。昨晚一朋友的话也刺激到了我，说我和她一样混迹于社会底层。这话准确，又不准确。从大的视野看，应该不至于底层吧；但从我个人的视野来看，的确是挺底层的。
+$ ./scripts/feeds clean $ ./scripts/feeds update -a &amp;amp;&amp;amp; ./scripts/feeds install -a 再进行 make menuconfig 等命令进行编译即可。</description></item><item><title>2020 生活与工作流水账 03</title><link>https://victoratmaoludotone.github.io/posts/2020-life-work-notes-03/</link><pubDate>Wed, 13 May 2020 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/2020-life-work-notes-03/</guid><description>拒绝回原公司的 Offer 后，一直没想着找工作。总是觉得很疲惫，对上班有一种倦怠感。昨晚一朋友的话也刺激到了我，说我和她一样混迹于社会底层。这话准确，又不准确。从大的视野看，应该不至于底层吧；但从我个人的视野来看，的确是挺底层的。
 没去上班的这段时间，在家主要就是两件事：玩王者荣耀、陪儿子玩。有些沉迷王者荣耀了。
 本来想着陪儿子玩的情景是：我在旁边椅子上看书，他在地上玩玩具或爬来爬去。但现实却相去甚远。7 个多月的儿子，对任何事物都充满了兴趣。你拿着一本书的话，他会立马爬过来要玩书。翻来翻去，再啃一啃。家里好几本书已经被他啃秃噜皮了。另一方面，你也不可能放任他在地上玩，因为他像狗一样，对你的拖鞋会非常感兴趣。因为他对拖鞋的兴趣，我母亲专门洗干净了一双拖鞋给他，结果他不喜欢，只喜欢被人穿过的，让人又气又无奈。
 王者荣耀霸占了我晚上的时间。一般从八九点钟到十二点左右，是王者荣耀时间。要么看直播，要么亲自玩。这两者还互相促进，让人欲罢不能。这个赛季已经上了王者了，荣耀王者和巅峰赛已经超出了我的能力，就先到此为止吧，已卸载。如果有 LGD 大鹅的比赛，倒是还可以看看。大鹅应该可以算是本届 KPL 迄今为止的最强战队，操作犀利，团战让人赏心悦目，大乔公孙离体系更是惊为天人。
 家庭的话，老婆最近挺消极的。她以前是个挺「奋斗」的人，怀孕以后，身体条件不允许再奋斗；生完娃休完产假回去上班，也没什么斗志了。可能是所谓的「与自己和解」了？可能是也信了天命吧。普通人想要上升靠个人奋斗真是太难了。只是态度还是应该积极一些。也有可能是受我的影响，我这几年也总是鼓吹宿命论。最好还是改变一下。
 我的母亲是我感情的一个矛盾点。她对我和我儿子毫无疑问是全心全意的，只是做事的方法和思维方式经常会让我非常恼火。而又是个暴躁的人，这就加剧了我们的矛盾。看得出来她很多时候在忍着我，这又让我很难过。因为独生子女、家庭变故、成长环境、性格基因等等的原因，我在为人处事上一直是孤僻加暴躁的结合体，要么高冷，要么尖酸，很少温柔以待。
 另外，网传的经营贷，我本来以为是少部分人的特权，没想到我自己也加入了进去。就算你不是企业法人，贷款中介公司也会帮你准备好公司，帮你提交资料，准备流程，把你房子增值的部分提现出来。目前流程还没走完，但看上去是可以贷出来的。贷出来一两百万的现金如何使用又成了问题。一开始想着去武汉买房投资，难点就在于买在哪里。光谷东的房子都要一万六七了，关山大道接近三万，但奇怪的是，武昌江边也只要三万，汉口江边也有很多三万的二手房。
-对于二线城市或者所谓的新一线城市来说，二手房市场的景气程度远远落后于北上广深。主要原因有两方面，一是庞大的土地也就是新房供应，二是政府为了维持土地财政，不断的做新的城市规划。这两个方面缺一不可。这样就导致一是人们更愿意买新房，二是城市的新区房价并不会太落后于老的核心区。对于武汉来讲，传统意义的核心在汉口或者二环线以内。但实际上二环线以内很多房子价格还不如二环外的。整个武汉的房价呈现多点开花的态势：一片平价区域的中间有一个价格突兀的地区，在每个区都有这么几个突兀的地区，并没有所谓武汉中心。这样就让投资者很难抉择。</description>
-    </item>
-    
-    <item>
-      <title>丰巢别想从我这里收到费</title>
-      <link>https://victoratmaoludotone.github.io/posts/no-way-to-rob-me-by-fcbox/</link>
-      <pubDate>Sun, 10 May 2020 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/no-way-to-rob-me-by-fcbox/</guid>
-      <description>民族之光瑞兴咖啡「割美国人韭菜」的时候，大家的确是喝到了既便宜品质又不错的咖啡，我还以为丰巢也是如此。没想到现在它拿起了镰刀，开始割社会主义的韭菜了。这怎么行？首先，丰巢已经向快递员收费了，方便快递员是其价值之一，这是毫无疑问的。
+对于二线城市或者所谓的新一线城市来说，二手房市场的景气程度远远落后于北上广深。主要原因有两方面，一是庞大的土地也就是新房供应，二是政府为了维持土地财政，不断的做新的城市规划。这两个方面缺一不可。这样就导致一是人们更愿意买新房，二是城市的新区房价并不会太落后于老的核心区。对于武汉来讲，传统意义的核心在汉口或者二环线以内。但实际上二环线以内很多房子价格还不如二环外的。整个武汉的房价呈现多点开花的态势：一片平价区域的中间有一个价格突兀的地区，在每个区都有这么几个突兀的地区，并没有所谓武汉中心。这样就让投资者很难抉择。</description></item><item><title>丰巢别想从我这里收到费</title><link>https://victoratmaoludotone.github.io/posts/no-way-to-rob-me-by-fcbox/</link><pubDate>Sun, 10 May 2020 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/no-way-to-rob-me-by-fcbox/</guid><description>民族之光瑞兴咖啡「割美国人韭菜」的时候，大家的确是喝到了既便宜品质又不错的咖啡，我还以为丰巢也是如此。没想到现在它拿起了镰刀，开始割社会主义的韭菜了。这怎么行？首先，丰巢已经向快递员收费了，方便快递员是其价值之一，这是毫无疑问的。
 但在收件人这一方面，就不是这么简单了。对于家里没人且担心快件安全性的人来说，他们可能愿意使用丰巢的暂存服务甚至为其付费。但对于家里常年有人，或者小区安全性极好的人来说，有很大概率是不愿意使用丰巢的，比如我。
 一方面，原本在家门口开下门就能拿到快件；但丰巢铺开后，很多的快递都直接送快递柜了，我还得下楼拿，有些小区比较大的，去快递柜甚至要走大几百米。但没找我收钱，虽然心里不爽，但也没到拒收的地步。但现在丰巢要收费，那它就变成了拦路打劫的角色了。此路是我开，留下买路财。
-另一方面，我能选择不用丰巢吗？我尝试过两种方式。一种是在收件人地址后括号注明放快递柜拒收，无效，快递员依旧没联系我直接投入了快递柜。另一种是在丰巢微信公众号设置不允许放丰巢，依然无效。所以丰巢借着市场垄断地位，表面上看给了我选择，实际上并没有。而且我的快递，凭什么需要丰巢给我选择？退一步说，我宁愿加钱给快递员让其送上门，也不愿意给丰巢。</description>
-    </item>
-    
-    <item>
-      <title>UBNT ER-X 刷 Open-WRT 并作为透明网关</title>
-      <link>https://victoratmaoludotone.github.io/posts/openwrt-on-erx-for-transparent-gateway/</link>
-      <pubDate>Tue, 07 Apr 2020 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/openwrt-on-erx-for-transparent-gateway/</guid>
-      <description>一直想在家庭网络中增加一个透明网关，达到让网络中所有设备在访问国外网站时自动使用代理的功能。家中本身有一个 3215U + 4 千兆网口的工控机，但嫌弃其电源实在占位置所以没启用。最近才觉察到 UniFi Switch 8 POE 150W 的网口是可以自定义 PoE+ 或 24V Passive PoE 供电的，因为 ER-X 本身体积就小，又支持 24V Passive PoE 供电，这样就可以节省充电器和充电线，仅用一根网线即可供电和数据传输，简约而不简单。
+另一方面，我能选择不用丰巢吗？我尝试过两种方式。一种是在收件人地址后括号注明放快递柜拒收，无效，快递员依旧没联系我直接投入了快递柜。另一种是在丰巢微信公众号设置不允许放丰巢，依然无效。所以丰巢借着市场垄断地位，表面上看给了我选择，实际上并没有。而且我的快递，凭什么需要丰巢给我选择？退一步说，我宁愿加钱给快递员让其送上门，也不愿意给丰巢。</description></item><item><title>UBNT ER-X 刷 Open-WRT 并作为透明网关</title><link>https://victoratmaoludotone.github.io/posts/openwrt-on-erx-for-transparent-gateway/</link><pubDate>Tue, 07 Apr 2020 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/openwrt-on-erx-for-transparent-gateway/</guid><description>一直想在家庭网络中增加一个透明网关，达到让网络中所有设备在访问国外网站时自动使用代理的功能。家中本身有一个 3215U + 4 千兆网口的工控机，但嫌弃其电源实在占位置所以没启用。最近才觉察到 UniFi Switch 8 POE 150W 的网口是可以自定义 PoE+ 或 24V Passive PoE 供电的，因为 ER-X 本身体积就小，又支持 24V Passive PoE 供电，这样就可以节省充电器和充电线，仅用一根网线即可供电和数据传输，简约而不简单。
 一、编译 ER-X Open-WRT 固件 因为官方 Open-WRT 的固件内容比较素，缺乏必备的 ShadowsocksR Plus 等插件，所以我采用 Lean 的 Open-WRT 固件自行编译。编译此固件是需要编译机可无障碍访问国外部分网站，在虚拟机上使用：
 $ export all_proxy=&amp;#34;socks5://your.proxy:1080&amp;#34; 尝试编译，依然失败，提示有文件无法下载。所以我最终采用在一台 Google Cloud Engine 机器上编译。编译时按照指引，在 make menuconfig 时：
-  Target System 选择 MediaTek Ralink MIPS
-  Subtarget 选择 MT7621 based boards
-  Target Profile 选择 EdgeRouter X</description>
-    </item>
-    
-    <item>
-      <title>郭杰瑞是中国人民的好朋友</title>
-      <link>https://victoratmaoludotone.github.io/posts/jerry-guo-is-a-good-friend-of-chinese-people/</link>
-      <pubDate>Mon, 06 Apr 2020 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/jerry-guo-is-a-good-friend-of-chinese-people/</guid>
-      <description>郭杰瑞在 CCTV 直播了，我不对视频的内容做评价，也挺喜欢郭杰瑞的节目的，尽管表情有些夸张。但小粉红们纷纷像打了鸡血一样，表示郭杰瑞是中国人民的老朋友，并且美国要完。
+Target System 选择 MediaTek Ralink MIPS
+Subtarget 选择 MT7621 based boards
+Target Profile 选择 EdgeRouter X</description></item><item><title>郭杰瑞是中国人民的好朋友</title><link>https://victoratmaoludotone.github.io/posts/jerry-guo-is-a-good-friend-of-chinese-people/</link><pubDate>Mon, 06 Apr 2020 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/jerry-guo-is-a-good-friend-of-chinese-people/</guid><description>郭杰瑞在 CCTV 直播了，我不对视频的内容做评价，也挺喜欢郭杰瑞的节目的，尽管表情有些夸张。但小粉红们纷纷像打了鸡血一样，表示郭杰瑞是中国人民的老朋友，并且美国要完。
 不妨设想一下，中国有个王杰瑞，在 YouTube 上天天发一些夸美国批评中国的视频，此人会被当下的小粉红们怎么看待？我想应该在第一期节目出来之后就中国全部媒体被封杀，身败名裂。
 即使不批评中国，只夸美国，也会被牧羊犬的评论淹没。现在的这种环境，容大一姐的这条今天北京有点热1 的微博有完美的展现。
 这种氛围，还让很多人嗅到了金钱的味道，比如现在有很多老外在抖音、B站等天天吹中国2 ，吸引大量小粉红们去舔臭脚，满足他们卑微的民族自豪感。
-  原微博已无法访问，参考此处备份：我觉得今天北京有点热 &amp;#x21a9;&amp;#xfe0e;
- 那些喊着“我爱中国”的外国网红 &amp;#x21a9;&amp;#xfe0e;
-   </description>
-    </item>
-    
-    <item>
-      <title>你不吃狗肉，所以你是卖国贼</title>
-      <link>https://victoratmaoludotone.github.io/posts/you-are-a-traitor-for-not-eating-dogs/</link>
-      <pubDate>Sun, 05 Apr 2020 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/you-are-a-traitor-for-not-eating-dogs/</guid>
-      <description>《深圳经济特区全面禁止食用野生动物条例》1 经市第六届人民代表大会常务委员会第四十次会议于 2020 年 3 月 31日通过，自 2020 年 5 月 1 日起施行。
+原微博已无法访问，参考此处备份：我觉得今天北京有点热 &amp;#x21a9;&amp;#xfe0e;
+那些喊着“我爱中国”的外国网红 &amp;#x21a9;&amp;#xfe0e;</description></item><item><title>你不吃狗肉，所以你是卖国贼</title><link>https://victoratmaoludotone.github.io/posts/you-are-a-traitor-for-not-eating-dogs/</link><pubDate>Sun, 05 Apr 2020 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/you-are-a-traitor-for-not-eating-dogs/</guid><description>《深圳经济特区全面禁止食用野生动物条例》1 经市第六届人民代表大会常务委员会第四十次会议于 2020 年 3 月 31日通过，自 2020 年 5 月 1 日起施行。
 此条例从征求意见稿期间就备受瞩目。主要原因在于其中有禁食猫狗的条款。猫一般没人吃，禁食狗肉，可是得罪了不少人。部分网民将禁食狗肉与西方价值观相等同，认为此条例乃卖国条例；另有部分网民认为此条例是爱狗人士编写，借着禁食野生动物之名夹带私货。
 我本人不吃狗肉，因为我从小就很喜欢狗。狗是单纯的，人是复杂且残忍的。
 不过我并不会阻止别人吃狗肉。世界是多样化的，吃狗肉就是一个明显的例子。吃狗肉的与不吃狗肉的在网上经常展开骂战。在以前，这个区分与政治无关。但随着现在中国互联网环境的恶化，不吃狗肉也是政治相关了，你不吃狗肉，你就是亲西方的，你就是卖国贼。
-  深圳经济特区全面禁止食用野生动物条例 &amp;#x21a9;&amp;#xfe0e;
-   </description>
-    </item>
-    
-    <item>
-      <title>瑞幸咖啡财务造假，中概股耻辱柱再添一笔</title>
-      <link>https://victoratmaoludotone.github.io/posts/lucky-coffee-financial-fraud-is-shameful/</link>
-      <pubDate>Fri, 03 Apr 2020 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/lucky-coffee-financial-fraud-is-shameful/</guid>
-      <description>瑞幸咖啡（Luckin Coffee）于周四（4月2日）晚间发布公告称，2019年第二季度到第四季度期间存在伪造交易行为，涉及销售额约22亿元。公司董事会已成立特别委员会，负责对2019年财年财报审计期间的问题展开调查。消息一出，瑞幸咖啡股价盘前暴跌超过80%，触发多次熔断。
+深圳经济特区全面禁止食用野生动物条例 &amp;#x21a9;&amp;#xfe0e;</description></item><item><title>瑞幸咖啡财务造假，中概股耻辱柱再添一笔</title><link>https://victoratmaoludotone.github.io/posts/lucky-coffee-financial-fraud-is-shameful/</link><pubDate>Fri, 03 Apr 2020 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/lucky-coffee-financial-fraud-is-shameful/</guid><description>瑞幸咖啡（Luckin Coffee）于周四（4月2日）晚间发布公告称，2019年第二季度到第四季度期间存在伪造交易行为，涉及销售额约22亿元。公司董事会已成立特别委员会，负责对2019年财年财报审计期间的问题展开调查。消息一出，瑞幸咖啡股价盘前暴跌超过80%，触发多次熔断。
 消息一出，朋友圈各种声音出现，主流的声音是瑞幸咖啡乃民族企业，收割美国的韭菜造福中国人民，由此可见中国人在外的恶评不是没有原因的。凡是发此类朋友圈的，已经从我的好友列表消失。
 其一，瑞幸造假，受益的是瑞幸的投资机构和股东，他们早已质押套现离场，受损的是美股股市中的中小投资者，美国股民受损，对你中国人有什么好处呢？割资本主义的韭菜？资本不分国界，资本家也不分国界，那韭菜分国界吗？
 其二、中概股从来就是有大量的中国股民参与的，在美股中持有瑞幸股票的中国股民为数不少，他们也蒙受了重大损失。
 其二，瑞幸造假，受损的还有其他正常的中概股企业和有意愿前往美股融资的中国企业瑞幸给所有中概股的形象蒙上了一层阴影，将引发一场对中国企业的信誉危机。
-对财务造假这种违法犯罪行为，不以为耻反以为荣，可谓又蠢又坏。</description>
-    </item>
-    
-    <item>
-      <title>杀人犯光速减刑出狱后再次杀人之思</title>
-      <link>https://victoratmaoludotone.github.io/posts/thought-on-murderer-killing-again-after-being-released-from-prison/</link>
-      <pubDate>Tue, 31 Mar 2020 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/thought-on-murderer-killing-again-after-being-released-from-prison/</guid>
-      <description>如果不是因为不戴口罩与人发生纠纷，进而将一名七旬老人殴打致死，郭文思很可能就不会被起底，他 2005 年被判处无期徒刑后获得 9 次减刑的记录也可能被尘封。
+对财务造假这种违法犯罪行为，不以为耻反以为荣，可谓又蠢又坏。</description></item><item><title>杀人犯光速减刑出狱后再次杀人之思</title><link>https://victoratmaoludotone.github.io/posts/thought-on-murderer-killing-again-after-being-released-from-prison/</link><pubDate>Tue, 31 Mar 2020 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/thought-on-murderer-killing-again-after-being-released-from-prison/</guid><description>如果不是因为不戴口罩与人发生纠纷，进而将一名七旬老人殴打致死，郭文思很可能就不会被起底，他 2005 年被判处无期徒刑后获得 9 次减刑的记录也可能被尘封。
 此事件中有三个关键点：
-  郭文思 2004 年杀害女友后，赔偿女友母亲 40 万获得谅解，2005 年 2 月 24 日审判免除死刑，判为无期徒刑；
-  2005 年入狱后，一个减刑节点都没错过，且都获得法律允许范围内最长的减刑期，到 2019 年 7 月 24 日出狱；实际刑期 14 年 5 个月；
-  郭文思出狱后，于 2020 年 3 月 14 日，再犯命案，距出狱不足 8 个月。
-  现在的死亡相关犯罪，只要被害者家人签了谅解书，犯罪分子就能免死。且不问家人是否有权利谅解，有谅解书就免死，等于是拿钱买命。即便现实中生命的确可以标价，但在法律中却不应该这样写，也不能这样实行，错误的顶层设计会导致错误的价值观导向。如果有人伤害了我的孩子，我绝对不会谅解，并且一定会以牙还牙。
+郭文思 2004 年杀害女友后，赔偿女友母亲 40 万获得谅解，2005 年 2 月 24 日审判免除死刑，判为无期徒刑；
+2005 年入狱后，一个减刑节点都没错过，且都获得法律允许范围内最长的减刑期，到 2019 年 7 月 24 日出狱；实际刑期 14 年 5 个月；
+郭文思出狱后，于 2020 年 3 月 14 日，再犯命案，距出狱不足 8 个月。
+现在的死亡相关犯罪，只要被害者家人签了谅解书，犯罪分子就能免死。且不问家人是否有权利谅解，有谅解书就免死，等于是拿钱买命。即便现实中生命的确可以标价，但在法律中却不应该这样写，也不能这样实行，错误的顶层设计会导致错误的价值观导向。如果有人伤害了我的孩子，我绝对不会谅解，并且一定会以牙还牙。
 但为什么现实中会有人签谅解书呢？因为不签谅解书，拿不到赔偿。法律应该将民事赔偿与刑事责任区分，这一点在具体执行上比较困难，但只要严格执法，冻结犯罪分子的财产，总是有一部分是可以执行到位的。
 其次，减刑。众所周知，在天朝，死缓等于无期徒行等于有期徒刑。以前不明白为什么国外会有几百年的有期徒刑，此次才明白了其中的好处。几百年的有期徒刑，基本无法通过减刑出狱了。
-我以为，杀人偿命才是正义的。法律界的专家学者，有一派主张废除死刑，理由之一就是死刑无助于维护治安，保留死刑是不文明的，是野蛮的。新加坡作为全世界犯罪率最低的国家，仅次于北朝鲜。新加坡犯罪率低的原因，除了教育水平高之外，是否也与其严格甚至严酷的刑罚有关呢？</description>
-    </item>
-    
-    <item>
-      <title>新冠病毒是军运会时从美国带来的？</title>
-      <link>https://victoratmaoludotone.github.io/posts/was-2019-ncov-brought-from-us-during-the-military-games/</link>
-      <pubDate>Fri, 20 Mar 2020 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/was-2019-ncov-brought-from-us-during-the-military-games/</guid>
-      <description>今日晚餐，与父母谈起当局与Party。他们可能是平时各种公众号看多了，或者收到长期宣传的影响，认为国外都是邪恶的，风景这边独好。
+我以为，杀人偿命才是正义的。法律界的专家学者，有一派主张废除死刑，理由之一就是死刑无助于维护治安，保留死刑是不文明的，是野蛮的。新加坡作为全世界犯罪率最低的国家，仅次于北朝鲜。新加坡犯罪率低的原因，除了教育水平高之外，是否也与其严格甚至严酷的刑罚有关呢？</description></item><item><title>新冠病毒是军运会时从美国带来的？</title><link>https://victoratmaoludotone.github.io/posts/was-2019-ncov-brought-from-us-during-the-military-games/</link><pubDate>Fri, 20 Mar 2020 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/was-2019-ncov-brought-from-us-during-the-military-games/</guid><description>今日晚餐，与父母谈起当局与Party。他们可能是平时各种公众号看多了，或者收到长期宣传的影响，认为国外都是邪恶的，风景这边独好。
 期间谈到武汉肺炎，母亲说现在都说武汉肺炎是美国在军运会的时候传来的。对于这种无稽之谈，我一开始是不想理会的。但吃完饭她又拿出手机找到某篇文章，里面说到几个点证明是美国传来的，又说美国运动员住的地方离华南海鲜市场很近等等，但用脑子就可以想到：
-  如果肺炎是从美国运动员传来的，那最先爆出病情的应该是美国运动员；
-  至于离华南海鲜市场的距离近，我想再近也近不过军运村的其他美国运动员，或其他国家的运动员；如果说美国运动员都被传染的消息是被美国封锁了，那其他国家的运动员也应该被感染，那么多国家的媒体都被封锁了？
-  晚餐期间父亲还说抗日主力是共产党，这个就更无力吐槽了。共产党没有装备、没有人员，如何能抵抗住人数庞大、装备精良的日军？这也是常识性问题。
+如果肺炎是从美国运动员传来的，那最先爆出病情的应该是美国运动员；
+至于离华南海鲜市场的距离近，我想再近也近不过军运村的其他美国运动员，或其他国家的运动员；如果说美国运动员都被传染的消息是被美国封锁了，那其他国家的运动员也应该被感染，那么多国家的媒体都被封锁了？
+晚餐期间父亲还说抗日主力是共产党，这个就更无力吐槽了。共产党没有装备、没有人员，如何能抵抗住人数庞大、装备精良的日军？这也是常识性问题。
 我也不认为凡是美国的就好，凡是当局的就差。一个正常的社会，应该有不同的声音，即使这个声音是错误的、偏激的；灯不拨不亮，理不辩不明。而现在的社会氛围呢？凡是中国的就是好，凡是西方的就是坏。你要敢说西方的好、西方的优势，或者你说现在国内的问题，那「不爱国」的帽子立马给你扣上。
 不得不说，现在中宣部的水平已经大幅提高了。但是否走在正路上？就拿此次疫情来说，主要分几个步骤：
-  初期：掩盖训诫。不会人传人，没有发现明显的人传人，可防可控，抓几个造谣的。
-  中期：悲壮英雄主义。壮士断腕，武汉加油。
-  中后期：中国优越。集中力量办大事，飞速建设火神山、雷神山，一方有难八方支援。
-  后期：国外要完。欧美自私愚蠢；新加坡日本要完；伊朗医疗水平低下。
-  从中期开始，已经没有人追问疫情的起源与发展了，悲剧变赞歌。但果真如此的话？那「外国」怎么还坚挺？「外国人」怎么还没灭亡？
-前几天我甚至想到，如果现在当局发动一场战争，国内的大部分人应该都会欢欣鼓舞备感振奋。鉴于现在的国力，一年内应该是像当年德意志第三帝国一样节节胜利征服大量土地，但第三帝国的结局呢？</description>
-    </item>
-    
-    <item>
-      <title>2020 生活与工作流水账 02</title>
-      <link>https://victoratmaoludotone.github.io/posts/2020-life-work-notes-02/</link>
-      <pubDate>Mon, 24 Feb 2020 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/2020-life-work-notes-02/</guid>
-      <description>鉴于大陆最近的网络环境，结合自己的日常生活，我将把可以替换的网络服务都替换成国外的服务商。目前完成的有：
-  VPS：Vultr + Cloudflare。
-  代理服务器：找了一家速度和价格都还能接受的全中转机场。
-  Google Account：Gmail 用于注册账户、Google Docs/Sheet 记录和收藏文章，Google Voice 接收验证码，可淘宝购买或找美国朋友帮忙。正常注册 Google Account 时需要验证手机，规避方式为挂美国全局代理 + 使用移动端 Gmail App 注册。
-  Apple ID：美区 iCloud。正常注册时需要绑定支付方式，规避方式为挂美国全局代理。
-  Telegram：使用 Google Voice 注册。
-  其余难点：
-  支付。注册美区Paypal，但是还是得绑定大陆的银行卡，无法匿名。目前涉及到支付的只有 iCloud 和 App Store，可以用礼品卡支撑。
-  使用机场的服务并不 100% 安全，存在部分机场可能是蜜罐机场的风险。
-  这周是在家办公第四周，总体来说，没啥事儿。这种状态跟是否在家办公无关，即使在公司，我也是这种状态。从奋斗的角度来看是不可取的，但我对目前的工作已经毫无兴趣，也感觉到不胜任。也不知道未来在哪里。
+初期：掩盖训诫。不会人传人，没有发现明显的人传人，可防可控，抓几个造谣的。
+中期：悲壮英雄主义。壮士断腕，武汉加油。
+中后期：中国优越。集中力量办大事，飞速建设火神山、雷神山，一方有难八方支援。
+后期：国外要完。欧美自私愚蠢；新加坡日本要完；伊朗医疗水平低下。
+从中期开始，已经没有人追问疫情的起源与发展了，悲剧变赞歌。但果真如此的话？那「外国」怎么还坚挺？「外国人」怎么还没灭亡？
+前几天我甚至想到，如果现在当局发动一场战争，国内的大部分人应该都会欢欣鼓舞备感振奋。鉴于现在的国力，一年内应该是像当年德意志第三帝国一样节节胜利征服大量土地，但第三帝国的结局呢？</description></item><item><title>2020 生活与工作流水账 02</title><link>https://victoratmaoludotone.github.io/posts/2020-life-work-notes-02/</link><pubDate>Mon, 24 Feb 2020 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/2020-life-work-notes-02/</guid><description>鉴于大陆最近的网络环境，结合自己的日常生活，我将把可以替换的网络服务都替换成国外的服务商。目前完成的有：
+VPS：Vultr + Cloudflare。
+代理服务器：找了一家速度和价格都还能接受的全中转机场。
+Google Account：Gmail 用于注册账户、Google Docs/Sheet 记录和收藏文章，Google Voice 接收验证码，可淘宝购买或找美国朋友帮忙。正常注册 Google Account 时需要验证手机，规避方式为挂美国全局代理 + 使用移动端 Gmail App 注册。
+Apple ID：美区 iCloud。正常注册时需要绑定支付方式，规避方式为挂美国全局代理。
+Telegram：使用 Google Voice 注册。
+其余难点：
+支付。注册美区Paypal，但是还是得绑定大陆的银行卡，无法匿名。目前涉及到支付的只有 iCloud 和 App Store，可以用礼品卡支撑。
+使用机场的服务并不 100% 安全，存在部分机场可能是蜜罐机场的风险。
+这周是在家办公第四周，总体来说，没啥事儿。这种状态跟是否在家办公无关，即使在公司，我也是这种状态。从奋斗的角度来看是不可取的，但我对目前的工作已经毫无兴趣，也感觉到不胜任。也不知道未来在哪里。
 与父亲的关系变得很糟糕。他终于说出他本来就不想来的真心话了，只可惜现在到湖北的交通全部中断，也只能在我这里耗着。
-部分机场的老板服务态度着实恶劣；但这不是最可恶的，毕竟别人是老板，提供的服务也是供不应求，有爱用用不用滚的自信；最可恶的是老板的狗腿子们，比老板的态度还恶劣，好像老板赚了钱会分他们一样，着实可笑。</description>
-    </item>
-    
-    <item>
-      <title>疫情中的脑瘫少年</title>
-      <link>https://victoratmaoludotone.github.io/posts/cerebral-palsy-boy-in-2019-ncov/</link>
-      <pubDate>Thu, 06 Feb 2020 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/cerebral-palsy-boy-in-2019-ncov/</guid>
-      <description>昨晚看到三联生活周刊公众号发布的《父亲被隔离6天后，17岁脑瘫少年的死亡》1 文章，心中的痛楚久久不能平息。今日重看此文，泪水还是在眼眶中打转。两个孩子从出生起，一个脑瘫，一个自闭症，是悲剧；孩子的母亲，受不了小儿子再次“不正常”而自杀，又是悲剧；孩子的父亲养育两个娃，被隔离导致丧子，还是悲剧。
+部分机场的老板服务态度着实恶劣；但这不是最可恶的，毕竟别人是老板，提供的服务也是供不应求，有爱用用不用滚的自信；最可恶的是老板的狗腿子们，比老板的态度还恶劣，好像老板赚了钱会分他们一样，着实可笑。</description></item><item><title>疫情中的脑瘫少年</title><link>https://victoratmaoludotone.github.io/posts/cerebral-palsy-boy-in-2019-ncov/</link><pubDate>Thu, 06 Feb 2020 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/cerebral-palsy-boy-in-2019-ncov/</guid><description>昨晚看到三联生活周刊公众号发布的《父亲被隔离6天后，17岁脑瘫少年的死亡》1 文章，心中的痛楚久久不能平息。今日重看此文，泪水还是在眼眶中打转。两个孩子从出生起，一个脑瘫，一个自闭症，是悲剧；孩子的母亲，受不了小儿子再次“不正常”而自杀，又是悲剧；孩子的父亲养育两个娃，被隔离导致丧子，还是悲剧。
 现实的苦难总是能超出人类的想象力。
 孩子的父亲，精心照顾孩子17年，“从来都没见过这两个儿子身上带一点脏”，拼尽全力想要改变孩子的命运。然而命运却总是如此凉薄。我不信神，但如果有神的话，我祈求您善待受苦难的人，不要让苦难如此深重。
 每个人都有罪。
@@ -230,17 +92,7 @@ $ export all_proxy=&amp;#34;socks5://your.proxy:1080&amp;#34; 尝试编译，依
 村里的人，也一样。你穷就笑话你，欺负你；你富就嫉妒你，偷你财物，贬你名声。为了一些鸡毛蒜皮的事儿，能大打出手。跟邻居为分界线超过无数次架；还有损人不利己偷偷把你家堰里的水放干的；偷你潜水泵的。所以我也不跟村里人来往。
 农村的落后，一方面是物质条件的匮乏；另一方面是思想的落后，人穷志短。
 今日和朋友聊疫情和疫情中的事，对当局真是失望。80后这代人，是幸运的，又是不幸的。更早的人未受过良好的教育；更晚的人则遇到了全方位的舆论压制。可谓是前不见古人，后不见来者，让人绝望。
-  父亲被隔离6天后，17岁脑瘫少年的死亡 &amp;#x21a9;&amp;#xfe0e;
-   </description>
-    </item>
-    
-    <item>
-      <title>新冠病毒疫情中的一些迷惑行为</title>
-      <link>https://victoratmaoludotone.github.io/posts/confused-behaviors-in-2019-ncov/</link>
-      <pubDate>Wed, 29 Jan 2020 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/confused-behaviors-in-2019-ncov/</guid>
-      <description>武汉肺炎正式开始「爆发」已经一周有余，期间有一些让我感到迷惑的行为，在此记录。
+父亲被隔离6天后，17岁脑瘫少年的死亡 &amp;#x21a9;&amp;#xfe0e;</description></item><item><title>新冠病毒疫情中的一些迷惑行为</title><link>https://victoratmaoludotone.github.io/posts/confused-behaviors-in-2019-ncov/</link><pubDate>Wed, 29 Jan 2020 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/confused-behaviors-in-2019-ncov/</guid><description>武汉肺炎正式开始「爆发」已经一周有余，期间有一些让我感到迷惑的行为，在此记录。
 一、只见市长，不见书记
 在我国的行政系统中，或者诸多新闻报道中，一般都是书记作为一把手。此次武汉肺炎，出现在人们面前的，是武汉市长和湖北省长；被嘲讽、批判的，也是武汉市长和湖北省长。党的领导何在？
 二、省长不知生产能力
@@ -250,45 +102,18 @@ $ export all_proxy=&amp;#34;socks5://your.proxy:1080&amp;#34; 尝试编译，依
 四、七天建成医院，国外羡慕
 武汉要在七天内完成火神山医院的建设，十天内交付使用。再次显示了社会主义优越性，国外网友惊了，纷纷表达羡慕。与此同时，各省报告称口罩不足、护目镜不足、防护服不足。
 五、急需免费捐助
-先是各地医院需要捐助，这个已经不太容易理解了；今天又看到某发达地区政府发布需要捐助的公告。捐助意思是免费获得，医院和政府达到如此地步了？没有资金付费采购？厉害了，我的国。</description>
-    </item>
-    
-    <item>
-      <title>我在疫情中遇到的一点小事</title>
-      <link>https://victoratmaoludotone.github.io/posts/little-things-in-2019-ncov/</link>
-      <pubDate>Thu, 23 Jan 2020 11:16:23 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/little-things-in-2019-ncov/</guid>
-      <description>前天晚上来了四个身穿防护服的疾控中心的人，救护车和警车都在楼下。我也算是本次疫情的亲历者了。本人怎么这么大的能量，在大学时候网上发表言论惊动了警察，本次肺炎又惊动了。
+先是各地医院需要捐助，这个已经不太容易理解了；今天又看到某发达地区政府发布需要捐助的公告。捐助意思是免费获得，医院和政府达到如此地步了？没有资金付费采购？厉害了，我的国。</description></item><item><title>我在疫情中遇到的一点小事</title><link>https://victoratmaoludotone.github.io/posts/little-things-in-2019-ncov/</link><pubDate>Thu, 23 Jan 2020 11:16:23 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/little-things-in-2019-ncov/</guid><description>前天晚上来了四个身穿防护服的疾控中心的人，救护车和警车都在楼下。我也算是本次疫情的亲历者了。本人怎么这么大的能量，在大学时候网上发表言论惊动了警察，本次肺炎又惊动了。
 周二早上去罗湖火车站接父亲到我家过年，父亲是前一天从湖北某县农村，坐火车到武昌火车站，然后在武昌换车，直达深圳。我开车到火车站，停好车的时候就戴上了N95口罩。接到父亲时，他也带着口罩。询问是否一路都带着口罩，得到了肯定的答复。取到车之后就把口罩脱了，两人开车回家。
 中午有些头疼，睡了一觉，起来量了体温，我36.5度，父亲37.5度，但父亲说身体无不适症状。随后我在深圳本地某扯淡群发消息说了这个事，晚上就有接到疾控的相关人员给我打电话，询问情况，我表示没有症状。又过了两小时，楼下来了一辆救护车和一辆警车。先是来了四个身穿白色防化服「全副武装」的疾控人员，我当面量体温，均为36.x度，不发烧。对方表示领导瞎指挥后拍照后走了。接着两个警察上门，询问情况，如实告知。此事在小区群众还引发了一阵恐慌。
 我的感想：
 一、在2019年12月份的时候，有新闻爆出武汉红头文件，公众得以知晓疫情。当局抓了人后，网上舆论全部消失，不造谣不传谣。到今天2019年1月23日，武汉「封城」，不知道谁是谣言？不知道哪些人被打脸了？哪些人又为此付出了生命和健康？
 二、我在群中发言，群里有一位警察，是通过什么流程查到我的手机号、住址等个人信息的？并且能发动疾控中心、街道派出所等直接上门的意图「抓人」的？当时已经是夜里十一点左右了。
 三、事发当晚，我退了相关的微信群。大学时候在网上发泄情绪惊动了警察，那还是十年前。
-更多的想法，就不在网上谈论了。「互联网绝非法外之地」，记住这一点。</description>
-    </item>
-    
-    <item>
-      <title>2020 生活与工作流水账 01</title>
-      <link>https://victoratmaoludotone.github.io/posts/2020-life-work-notes-01/</link>
-      <pubDate>Thu, 09 Jan 2020 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/2020-life-work-notes-01/</guid>
-      <description>昨天开始正式读 SCRUM 的书，第一章描述瀑布式或甘特图式产品研发流程的问题。里面很多都是我在现实中真实遇到的问题，比如说绝大部分项目都不是按照甘特图中描绘的时间计划完成的。
+更多的想法，就不在网上谈论了。「互联网绝非法外之地」，记住这一点。</description></item><item><title>2020 生活与工作流水账 01</title><link>https://victoratmaoludotone.github.io/posts/2020-life-work-notes-01/</link><pubDate>Thu, 09 Jan 2020 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/2020-life-work-notes-01/</guid><description>昨天开始正式读 SCRUM 的书，第一章描述瀑布式或甘特图式产品研发流程的问题。里面很多都是我在现实中真实遇到的问题，比如说绝大部分项目都不是按照甘特图中描绘的时间计划完成的。
 最近几天在工作上毫无进展，又陷入了不想工作的状态。时不时逛一下知乎，看到一个高级管理层过分关注具体事物的批评。这种情况目前我还是不知如何评价，是好事还是坏事？就我个人来讲，是不太喜欢这种老板的。
 第二个评论是从某家公司的老板要求员工一天出100张设计稿让她选事件，延伸到很多老板声称他不知道什么是用户想要的，但如果给他很多方案，他能挑出哪个是用户想要的。这就是老板让员工提方案的典型场景。我觉得，老板固然不会亲自做某件事，但他一定要让员工知道事情应该怎么做，而不是让员工出很多方案去挑。说白了，这种老板或者领导是无能的。
 昨天与伪「前公司」的几个朋友吃饭，有些升职，有些有升职潜力，有些原地踏步。升职的是勤奋的人，有潜力的是聪明人，原地踏步的分情况：笨，懒。其实就算是勤奋的人，也要看机遇；运气不好，一直没机会，再勤奋也没用；升职加薪靠的是勤奋加机遇。席间聊了一些八卦，同事A竟然婚内出轨同事B，而被出轨的居然是同事C。所以千万别乱说话，有些隐秘的关系是你无法想象到的。
-今晚回去练半小时划船机。</description>
-    </item>
-    
-    <item>
-      <title>读《在细雨中呼喊》有感</title>
-      <link>https://victoratmaoludotone.github.io/posts/after-reading-yelling-in-the-drizzle/</link>
-      <pubDate>Mon, 23 Dec 2019 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/after-reading-yelling-in-the-drizzle/</guid>
-      <description>初中还是高中的时候，喜欢读韩寒的小说。最有意思的一本，我认为是《像少年啦飞驰》。主人公的一系列无厘头生活，让人笑得肚子痛。
+今晚回去练半小时划船机。</description></item><item><title>读《在细雨中呼喊》有感</title><link>https://victoratmaoludotone.github.io/posts/after-reading-yelling-in-the-drizzle/</link><pubDate>Mon, 23 Dec 2019 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/after-reading-yelling-in-the-drizzle/</guid><description>初中还是高中的时候，喜欢读韩寒的小说。最有意思的一本，我认为是《像少年啦飞驰》。主人公的一系列无厘头生活，让人笑得肚子痛。
 最近看了余华的《在细雨中呼喊》，觉得当年韩寒的《像少年啦飞驰》，可能是在模仿余华这本书。印象中，韩寒的那本，在书的结尾才让人感到悲凉；余华的这本，则全书都贯穿着可笑可悲的气息。这也应证了喜剧的内核是悲剧这一说法。
 《在细雨中呼喊》的主人公家里有三兄弟，名字很相似，我不记得了。三代人的悲剧故事随着余华的笔触徐徐展开。
 主人公的爷爷，在民国时期做一个古老的职业：桥梁工程师。他爷爷一帮人的最后一座桥，是一座歪脖子桥，这座歪脖子桥，一头有一棵歪脖子树。可能是因为歪脖子的原因，这座桥在开通的当天就塌了。可能在当年做砸了一个工程就永久禁止进入此行业了，他爷爷他们也失业了。适逢战争到来，无事可做，终于做了一个流浪汉。
@@ -299,16 +124,7 @@ $ export all_proxy=&amp;#34;socks5://your.proxy:1080&amp;#34; 尝试编译，依
 继父死后，继母在一个夜黑风高的夜晚，抛弃了主人公，独自潜回了娘家。这时候她不再喜欢阳光了。
 继父一家变故之后，主人公只能回亲生父母的家庭。也是在一个夜黑风高的夜晚，他摸索着回家的路，在路上遇到一个老头，但他没想到也没认出来这个老头是他的爷爷。他的爷爷老了以后，在几个儿子家轮流住。看起来每个儿子都不喜欢自己的爹，七八十岁的老人，已经无法记得回家的路，去的时候没人送，回的时候没人接。我怀疑，这些儿子很可能是想让老人死在某个荒山野岭的地方，最好不要有人发现。当主人公和他爷爷前脚后脚走进村子的时候，天上正飘着细雨，村里有一户人家着火了，大火烧光了家里的财物。这户人家就是他自己的家。
 文中还有另一些人物。比如说，有一个小朋友，没了妈妈，他爸爸找了一个新老婆，将小孩子一个人留在房子里，不要他了。主人公的父亲，也不要主人公了。主人公的继母，也不要主人公了。主人公的爷爷，被他的儿子们抛弃。
-这个故事，亦真亦假。我怀疑在中国的农村或者说在当时的年代，这种事情的确是有可能的。</description>
-    </item>
-    
-    <item>
-      <title>2019 年总结</title>
-      <link>https://victoratmaoludotone.github.io/posts/2019-summary/</link>
-      <pubDate>Sun, 22 Dec 2019 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/2019-summary/</guid>
-      <description>总是想写点东西，但由于常年未写，已经逐渐丧失了这种能力。最近看了《在细雨中呼喊》，羡慕作家能写出如此打动人的文字，而我这种人，甚至连将事情说清楚的能力都已经丧失了。
+这个故事，亦真亦假。我怀疑在中国的农村或者说在当时的年代，这种事情的确是有可能的。</description></item><item><title>2019 年总结</title><link>https://victoratmaoludotone.github.io/posts/2019-summary/</link><pubDate>Sun, 22 Dec 2019 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/2019-summary/</guid><description>总是想写点东西，但由于常年未写，已经逐渐丧失了这种能力。最近看了《在细雨中呼喊》，羡慕作家能写出如此打动人的文字，而我这种人，甚至连将事情说清楚的能力都已经丧失了。
 已经忘记了去年年底时，给今年定的几个目标。但很明显的，两个主要的目标已经是未完成的状态了：戒烟、减肥。吃了一年的戒烟糖，还是会交叉吃戒烟糖和吸烟，戒烟可以说完全失败。减肥也一样，完全失败，不仅没减，甚至又增加了 20 斤，让我无法面对电子秤上的数字。2010 年还是得继续。
 工作上，现在后悔当时为什么要跟老吴来创业，一如 2015 年的时候后悔进入某房产公司工作。从彩票公司到房产公司，我的人生似乎进入了下降通道。实事求是的说，从大学开始，我的人生就进入了下降通道。高考即巅峰。现在很反感别人说「你好厉害，某 985 大学毕业的」，因为当我听到这种话时，我心里会想到「那还不是和你们这些专科三本的在一起工作？」。现在的状况，其实都是自己一手造成的。没有歧视专科三本的意思，是触到痛处的本能回击。
 今年主要的两件事，一是跟老吴出来「创业」，二是儿子呱呱出生。
@@ -318,49 +134,22 @@ $ export all_proxy=&amp;#34;socks5://your.proxy:1080&amp;#34; 尝试编译，依
 在产品和研发上，我跟研发总监都有责任。第一个难题就是招人，创业公司招人不易，如果说正常运转的公司，能用市场价招到合适的人，那么创业公司用市场价，只能找到低于「合适」标准的人。而我们拿到的价格标准，甚至是低于市场价的，那招人的速度和质量都无法保证。我也不愿意从以前的团队中挖人，因为我不想给别人带去风险，毕竟创业公司前途未卜。第二个，人员的组织。在做项目经理的时候，我是全面管理产品、UI、研发、测试。到新公司来作为产品总监，我却只管理了产品和 UI，研发团队由研发总监管理。我应该更多的参与到研发团队的管理中去，但我却担心有研发总监的情况下，我去参与研发团队的管理，影响研发总监和研发团队的心理。在普通公司这样可行，但在现在的公司不行，所以我有责任。对于研发总监来说，他个人能力很强，但管理上缺少经验，导致经过半年，研发团队比较涣散，这是他的责任。
 在运营上，也存在问题。现在的运营团队，就我个人的视角来说，我看不上，能力很差。运营需求基本靠嘴，即使有纸面的需求，也很简陋。没有高质量的运营需求文档，在确定产品需求的时候就要花大量时间沟通，导致产品方案延期甚至完全改变需求；在研发完成后，运营又会说这没有那没有，这有问题那有问题，导致各方不满意。
 其实现在的公司，包括之前的公司，或者说房产类公司，不需要产品经理，对吗？因为房产公司的需求，来自于竞品。只需要看竞品如何做的，把所有竞品的功能组合复制一套，就行了。对于这种公司来讲，只需要一个文档专员，不需要「产品经理」。也难怪看到一份链家产品经理的简历，上面写着：房产公司勿扰。所以产品经理在找工作的时候，一定要分析这家公司的业务模式，推断公司是不是真的需要产品经理，否则进入一个其实并不需要产品经理的公司，对个人的前途是非常不利的。
-所以，我一定要离开现在的公司，离开现在的行业。</description>
-    </item>
-    
-    <item>
-      <title>时光一去不复返</title>
-      <link>https://victoratmaoludotone.github.io/posts/time-flies-and-you-can-never-go-back/</link>
-      <pubDate>Thu, 12 Dec 2019 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/time-flies-and-you-can-never-go-back/</guid>
-      <description>在妻子面前，我总是一副无所不能的面貌。包括工作，一直以来，我的表现都很「OK」。但内心却有深深的苦闷。
+所以，我一定要离开现在的公司，离开现在的行业。</description></item><item><title>时光一去不复返</title><link>https://victoratmaoludotone.github.io/posts/time-flies-and-you-can-never-go-back/</link><pubDate>Thu, 12 Dec 2019 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/time-flies-and-you-can-never-go-back/</guid><description>在妻子面前，我总是一副无所不能的面貌。包括工作，一直以来，我的表现都很「OK」。但内心却有深深的苦闷。
 其实我也不知道妻子对我工作的看法，因为每当她提到我工作中的事情时，我都很不耐烦甚至很生气的拒绝回答，并让她不要再关心我的工作了。所以她如何看待我的工作，我的表现在她的心中是什么评价，我都一无所知。
 一直以来，我自认为是个孤独的人并且享受孤独，但现在偶尔也会感到无人诉说的痛楚。
 当我跟她说到想辞职时，她都劝我冷静考虑。我不止一次跟她讲工作很不开心、很痛苦，她的回复都是让我冷静。我故意说她就是担心我没有收入不能为家庭做贡献，期待着她否认并且安慰我，告诉我我随时可以辞职，只要不开心就不要做了。但她没有给我这样的回复。我知道她并不是为了我那点薪资，但这依然让我不舒服。今天她又让我上交这个月的工资，我又故意说你等这么久就是为了让我转钱给你，你不让我辞职也是为了钱。同样地，我期待着她否认，但也同样的，我没有得到这种答复。她反而生气了，说以后再也不用上交了。
 我知道，这并不代表她如我故意说的那样。
 年纪越大，越患得患失。一无所有的时光一去不复返，说走就走的旅行也一去不复返。尽管我并没有说走就走过，但曾经有过这种选择权。谈到选择权，想到一个老生常谈的问题：读大学有什么用？我觉得，这就是答案。读了大学，或者说，越高的学历，就拥有更广泛的选择权。当然，这种说法的前提是，你平等的看待所有职业。
 朋友圈看到前几年在韶关住过的一家旅社的老板娘的动态，是一个很简陋的小视频，背景是两边都是金黄银杏树的大路，片片树叶缓缓落下（却不是银杏树叶），在落下的过程中，树叶上显现出老板娘的照片。这种小视频，制作起来非常简单，但老板娘的朋友圈文本是：
- 这个视频制作让我飘飘然。
- 我发自内心羡慕这种状态。他们在小城市甚至是小村落，享受着简单轻松的生活。他们才是真的爱美的人，爱生活的人。留给大城市钢筋混凝土建筑中的码农、社畜们的，只有无穷无尽的欲望与攀比。欲望与攀比让人痛苦。
+这个视频制作让我飘飘然。
+我发自内心羡慕这种状态。他们在小城市甚至是小村落，享受着简单轻松的生活。他们才是真的爱美的人，爱生活的人。留给大城市钢筋混凝土建筑中的码农、社畜们的，只有无穷无尽的欲望与攀比。欲望与攀比让人痛苦。
 但我却无法拥有这种状态，是什么让我无法拥有这种状态？是城市的房产？是房产附加的学区？是小孩的起点？是便利的生活条件？都是，又都不是。束缚我的，只能是我自己，而不是外在的某些事物。
-是我的内心。</description>
-    </item>
-    
-    <item>
-      <title>非对称加密的基本原理</title>
-      <link>https://victoratmaoludotone.github.io/posts/basic-principles-of-asymmetric-encryption/</link>
-      <pubDate>Fri, 14 Jun 2019 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/basic-principles-of-asymmetric-encryption/</guid>
-      <description>非对称加密算法需要两个密钥：公开密钥（publickey，简称公钥）和私有密钥（privatekey，简称私钥）。公钥与私钥是一对，如果用公钥对数据进行加密，只有用对应的私钥才能解密。因为加密和解密使用的是两个不同的密钥，所以这种算法叫作非对称加密算法。
+是我的内心。</description></item><item><title>非对称加密的基本原理</title><link>https://victoratmaoludotone.github.io/posts/basic-principles-of-asymmetric-encryption/</link><pubDate>Fri, 14 Jun 2019 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/basic-principles-of-asymmetric-encryption/</guid><description>非对称加密算法需要两个密钥：公开密钥（publickey，简称公钥）和私有密钥（privatekey，简称私钥）。公钥与私钥是一对，如果用公钥对数据进行加密，只有用对应的私钥才能解密。因为加密和解密使用的是两个不同的密钥，所以这种算法叫作非对称加密算法。
 非对称加密算法实现机密信息交换的基本过程是：
-  甲方生成一对密钥并将公钥公开；
-  需要向甲方发送信息的其他角色(乙方)使用该密钥(甲方的公钥)对机密信息进行加密后再发送给甲方；
-  甲方用自己私钥对加密后的信息进行解密。
-  甲方想要回复乙方时正好相反，使用乙方的公钥对数据进行加密，同理，乙方使用自己的私钥来进行解密。</description>
-    </item>
-    
-    <item>
-      <title>2016 年总结</title>
-      <link>https://victoratmaoludotone.github.io/posts/2016-summary/</link>
-      <pubDate>Mon, 16 Jan 2017 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/2016-summary/</guid>
-      <description>这几天鹏城的气温一路下降，穿着薄羽绒服也不敢轻易出门了。2015年没有写年终总结，2016年还是写一下吧，作为一种仪式。对于我这个阶段的普通人来说，在旁人看来，能拿出来说的成就，也就不外乎升职加薪这两样。今年是毫无成就的一年，既没有升职，也没有加薪。
+甲方生成一对密钥并将公钥公开；
+需要向甲方发送信息的其他角色(乙方)使用该密钥(甲方的公钥)对机密信息进行加密后再发送给甲方；
+甲方用自己私钥对加密后的信息进行解密。
+甲方想要回复乙方时正好相反，使用乙方的公钥对数据进行加密，同理，乙方使用自己的私钥来进行解密。</description></item><item><title>2016 年总结</title><link>https://victoratmaoludotone.github.io/posts/2016-summary/</link><pubDate>Mon, 16 Jan 2017 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/2016-summary/</guid><description>这几天鹏城的气温一路下降，穿着薄羽绒服也不敢轻易出门了。2015年没有写年终总结，2016年还是写一下吧，作为一种仪式。对于我这个阶段的普通人来说，在旁人看来，能拿出来说的成就，也就不外乎升职加薪这两样。今年是毫无成就的一年，既没有升职，也没有加薪。
 我感到很惭愧，没有脸去丈母娘家吃年夜饭。还记得前几年有一次去老婆那边的爷爷奶奶家，岳父逼着我跟爷爷说当年的年终奖多少。那一年的年终奖，虽然绝对值不算多，但比现在的年终双薪还是多了好几倍。现在想来，实在是庆幸。如果是这两年去，就没办法说了。
 除开升职加薪，回想起来，今年还是完成了几件大事。
 婚姻 首先就是结婚了，与无拘无束的生活说再见。我们两口子的性格的确都很冲动，第一次买房一天下决定，第二次买房一周下决定，而结婚的日子，也是当天临时决定的。在那个阳光明媚的上午，我忽然意识到这一天可能是今年最好的也是人不那么多的结婚日期。带上老婆回去临时刮胡子拍照片找衣服，尽管最后找到的衣服不是一个颜色，不过也还算般配。
@@ -372,50 +161,23 @@ $ export all_proxy=&amp;#34;socks5://your.proxy:1080&amp;#34; 尝试编译，依
 从55平的房子刚搬进105平的房子，感觉特别宽敞，特别大。用家具填满了房间后，感觉还是紧张。欲望无止尽，如果以后有了小孩并且父母来帮忙带小孩，那么除非把书房省略掉，否则三房就不够用了。如果有个私家院子的话，可以烧烤，可以晒太阳，狗狗也有更大的无需照看的自由活动空间，那就更棒了。这些都需要更多的钱。
 对于住家来说，除了内部环境之外，外部环境也很重要。以前的小区，没有花园，就是两栋楼；物业除了在收物业费的时候会出现，平时都是神龙见首不见尾。现在的小区有大面积的花园，物业公司是万科物业，小区的自然环境维护和治安提升都太显著了，住着舒心。唯一的不便是较为偏避，商业不发达，然而对于我这种不好热闹的人来说，并没有觉得不便。
 戒烟 最后，在健康方面，成功戒烟。
-抽烟毁坏了我的牙齿，毁坏了我的肺，也伤害了给周围人的健康。在科学戒烟方法的指导下，这次戒烟应该是成功了。</description>
-    </item>
-    
-    <item>
-      <title>Nexus 5X 解锁 Recovery 并 ROOT</title>
-      <link>https://victoratmaoludotone.github.io/posts/nexus-5x-unlock-recovery-and-root/</link>
-      <pubDate>Mon, 20 Jun 2016 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/nexus-5x-unlock-recovery-and-root/</guid>
-      <description>注意：
-  进行以下操作会清除手机所有数据，请谨慎。
-  鉴于第一条，建议将手机恢复出厂状态进行操作，避免不必要的错误。
-  本文不适用于 Android N 系统，会导致无限 TEAMWIN 界面。
-   一、安装 Homebrew 和安卓开发者套件 安装 Homebrew（已安装的可以忽略此步骤）：
+抽烟毁坏了我的牙齿，毁坏了我的肺，也伤害了给周围人的健康。在科学戒烟方法的指导下，这次戒烟应该是成功了。</description></item><item><title>Nexus 5X 解锁 Recovery 并 ROOT</title><link>https://victoratmaoludotone.github.io/posts/nexus-5x-unlock-recovery-and-root/</link><pubDate>Mon, 20 Jun 2016 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/nexus-5x-unlock-recovery-and-root/</guid><description>注意：
+进行以下操作会清除手机所有数据，请谨慎。
+鉴于第一条，建议将手机恢复出厂状态进行操作，避免不必要的错误。
+本文不适用于 Android N 系统，会导致无限 TEAMWIN 界面。
+一、安装 Homebrew 和安卓开发者套件 安装 Homebrew（已安装的可以忽略此步骤）：
 $ /usr/bin/ruby -e &amp;#34;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&amp;#34; 安装安卓开发者套件：
 $ brew install android-platform-tools 安装完成后，在终端输入 adb version，应该可以看到 adb 的版本号。
 二、下载 SuperSU 和 TWRP Recovery SuperSU：http://download.chainfire.eu/supersu
 TWRP：https://dl.twrp.me/bullhead/
 SuperSU的包为.zip 格式，TWRP的包为.img 格式，两个包下载完后都不要进行解压缩或其他操作，将两个包放到任意一个文件夹中。
 三、打开 USB 调试 在 设置 &amp;gt; 关于手机 中，拉到底部，连续点击 版本号，系统会提示 已开启开发者模式。
-进入 设置 &amp;gt; 开发者选项 中，打开 OEM 解锁 和 USB 调试。使用数据线连接手机，在手机屏幕上会弹出提示是否允许当前计算机进行USB 调试，选择允许。在终端中输入 adb devices，如果连接正常，在 list of devices attached 下方会显示出手机设备的 id。</description>
-    </item>
-    
-    <item>
-      <title>百度网盘预生成分享网址的功能设想</title>
-      <link>https://victoratmaoludotone.github.io/posts/thought-about-baidu-pan-feature-for-pre-generate-share-url/</link>
-      <pubDate>Fri, 04 Mar 2016 10:20:41 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/thought-about-baidu-pan-feature-for-pre-generate-share-url/</guid>
-      <description>百度云网盘是很多小站长会使用的一项存储服务。容量大，速度也比较快，可以为网站的用户提供要求不那么高的下载服务。但是百度云最开始是为普通个人用户设计的，站长使用中，会有一些不便，比如没有统计功能等等。今天我要吐槽的，是离线下载不能直接分享。
+进入 设置 &amp;gt; 开发者选项 中，打开 OEM 解锁 和 USB 调试。使用数据线连接手机，在手机屏幕上会弹出提示是否允许当前计算机进行USB 调试，选择允许。在终端中输入 adb devices，如果连接正常，在 list of devices attached 下方会显示出手机设备的 id。</description></item><item><title>百度网盘预生成分享网址的功能设想</title><link>https://victoratmaoludotone.github.io/posts/thought-about-baidu-pan-feature-for-pre-generate-share-url/</link><pubDate>Fri, 04 Mar 2016 10:20:41 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/thought-about-baidu-pan-feature-for-pre-generate-share-url/</guid><description>百度云网盘是很多小站长会使用的一项存储服务。容量大，速度也比较快，可以为网站的用户提供要求不那么高的下载服务。但是百度云最开始是为普通个人用户设计的，站长使用中，会有一些不便，比如没有统计功能等等。今天我要吐槽的，是离线下载不能直接分享。
 站长上传或者离线文件，一般都是为了生成分享链接给用户使用。而使用目前的上传或离线下载功能，必须人工监控传输进度，等待完成后再手动生成分享链接。特别是在传输大文件时，需要等待很久。其实这个问题很好解决，只需要在用户上传时提供分享功能即可。
 以离线下载功能为例。在离线下载任务列表中，增加一个分享按钮，不论该任务是否完成，都可用。
 当用户根据这里的分享链接访问分享内容页面时，可以向用户展示下载进度。
 这里甚至可以更进一步，对已登录百度云网盘的用户提供关注或进度通知功能，对于未登录的用户提供登录或注册引导。
-提供预分享链接，能够大大的减轻站长的关注压力，对资源的审核、下架等操作也完全没有影响。中小站长作为资源创造或转发者，服务好了中小站长，也就是服务好了普通用户。希望百度云能提供类似功能。</description>
-    </item>
-    
-    <item>
-      <title>房产中介公司向互联网转型之痛</title>
-      <link>https://victoratmaoludotone.github.io/posts/problems-in-real-estate-angency-using-dotcom/</link>
-      <pubDate>Wed, 12 Aug 2015 12:58:02 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/problems-in-real-estate-angency-using-dotcom/</guid>
-      <description>先是过敏，接着脚伤了，接着咳嗽、发烧，快好的时候又突然演变为支气管炎，直到今日还没完全好。
+提供预分享链接，能够大大的减轻站长的关注压力，对资源的审核、下架等操作也完全没有影响。中小站长作为资源创造或转发者，服务好了中小站长，也就是服务好了普通用户。希望百度云能提供类似功能。</description></item><item><title>房产中介公司向互联网转型之痛</title><link>https://victoratmaoludotone.github.io/posts/problems-in-real-estate-angency-using-dotcom/</link><pubDate>Wed, 12 Aug 2015 12:58:02 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/problems-in-real-estate-angency-using-dotcom/</guid><description>先是过敏，接着脚伤了，接着咳嗽、发烧，快好的时候又突然演变为支气管炎，直到今日还没完全好。
 不过，与身体的病痛相比，内心的煎熬才是更痛苦的。中介行业是个非常落后的行业，从业人员的素质也极其低下。其实谈用户的绝对素质，并非比之前的行业差多少。更为重要的是，团队中的其他成员也很少有具备与工作岗位匹配的能力。在这样的团队中，产品经理的压力非常大。因为其他成员很难理解一些非常简单的常识，更缺少很多基本的工作方法，短板缺少的，都需要产品来带。
 一、运营 目前团队的运营主要存在3个问题。
 首先，运营人员完全沦为了客服。每天的大部分工作时间在接听电话，与客户沟通。不可否认，与客户沟通非常重要，但更多的应当由客服人员来处理这些问题。运营人员在这种事情上投入过大是完完全全的舍本逐末。退一步说，假定就是客服的定位，那这份工作也没有做好。不会收集客户的有效信息，进而分析客户遇到的问题并提出解决方案。仅仅直接把客户的反馈转发到产品和研发侧是很不负责任的做法。
@@ -428,77 +190,39 @@ SuperSU的包为.zip 格式，TWRP的包为.img 格式，两个包下载完后�
 目前公司产品线过长可能就是转型的恶果。互联网讲究单点突破，然后再逐步扩张。但从传统行业转型的公司可能很难理解这一点。取而代之的，是每个都想做，但最终拿不出一个拳头产品来打市场。一方面，一堆的网站和APP让用户无所适从；另一方面，这种公司本身的研发实力较弱，技术也更为落后，生产力低下，在这种情况下还要面对大量的项目，质量很难保证，每个项目的进度也非常慢。
 在管理方面，转型也存在很大的问题。拍脑袋就不说了，更严重的是大规模的拍脑袋会议，从高管到普通员工在同一场低效率会议中，现场拍脑袋下决策。对「模式」的痴迷可能是导致高层经常召集各种规模会议的源动力，但再好的「模式」也需要落地，不如多关注下产品的落地。连金融这种未来的利润点都能交给外包做，这种会议决策能力可见一斑。
 传统公司往互联网转型不仅仅是成立一个互联网部门而已。需要整个公司的所有部门都努力拥抱互联网，学习之前不理解不明白的内容。举个例子，接入第三方支付，这种内容不仅是产品开发能走完整个流程的，财务部门也需要了解清楚如何对账，充值提款是什么样的流程。这些对于传统企业的财务人员要求可能比较高，却又是不得不走的一步。
-最后，移动端是未来，去节点化是未来。希望不要走错路。</description>
-    </item>
-    
-    <item>
-      <title>macOS 使用 ssh key 登陆服务器</title>
-      <link>https://victoratmaoludotone.github.io/posts/login-server-using-ssh-key-on-macos/</link>
-      <pubDate>Sat, 18 Jul 2015 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/login-server-using-ssh-key-on-macos/</guid>
-      <description>先生成公钥和私钥，在 Mac OSX 终端（或 iTerm 2 等）中进入 ~/.ssh 目录，输入：
+最后，移动端是未来，去节点化是未来。希望不要走错路。</description></item><item><title>macOS 使用 ssh key 登陆服务器</title><link>https://victoratmaoludotone.github.io/posts/login-server-using-ssh-key-on-macos/</link><pubDate>Sat, 18 Jul 2015 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/login-server-using-ssh-key-on-macos/</guid><description>先生成公钥和私钥，在 Mac OSX 终端（或 iTerm 2 等）中进入 ~/.ssh 目录，输入：
 $ ssh-keygen -t rsa 会询问一些问题，直接全部回车，即可在 ~/.ssh 目录中生成 id_rsa（私钥） 和 id_rsa.pub（公钥）文件。我们需要将公钥上传到 testhost 服务器的 ~/.ssh 目录下面，因为第二种方式中我们已经配置了 testhost 服务器，scp 也能识别这个服务器，所以，可以使用如下命令将文件传输到 testhost 服务器中：
 $ scp ~/.ssh/id_rsa.pub testhost:~/.ssh/ 接下来，用第二种方式登录到 testhost 服务器中，在 ~/.ssh 目录中使用以下命令将 id_rsa.pub 更名为 authorized_keys：
 $ mv id_rsa.pub authorized_keys 最后确保下文件权限正常：
 $ chmod 700 ~/.ssh/ $ chmod 600 ~/.ssh/authorized_keys 现在，我们可以在 Mac OSX 的终端中使用 ssh testhost 登录到 testhost 服务器了，无需输入密码，更无需记忆服务器参数。
-如果无法连接，请在服务器的 /etc/ssh/sshd_config 文件中查看 PubkeyAuthentication 的值是否为 yes，如果不是，请修改为 yes ，并使用以下命令重启 ssh 服务：</description>
-    </item>
-    
-    <item>
-      <title>科目二考试失败总结</title>
-      <link>https://victoratmaoludotone.github.io/posts/failed-in-driver-license-test/</link>
-      <pubDate>Tue, 14 Apr 2015 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/failed-in-driver-license-test/</guid>
-      <description>昨天去江西考科目二，走到半路才发现身份证没带，之前教练说过要带身份证，上车前也提醒了，我处于自信就没有在出发前检查，结果真的没带。最后浪费 Amy 的时间帮我从深圳人肉把身份证送到江西，真的很抱歉。
+如果无法连接，请在服务器的 /etc/ssh/sshd_config 文件中查看 PubkeyAuthentication 的值是否为 yes，如果不是，请修改为 yes ，并使用以下命令重启 ssh 服务：</description></item><item><title>科目二考试失败总结</title><link>https://victoratmaoludotone.github.io/posts/failed-in-driver-license-test/</link><pubDate>Tue, 14 Apr 2015 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/failed-in-driver-license-test/</guid><description>昨天去江西考科目二，走到半路才发现身份证没带，之前教练说过要带身份证，上车前也提醒了，我处于自信就没有在出发前检查，结果真的没带。最后浪费 Amy 的时间帮我从深圳人肉把身份证送到江西，真的很抱歉。
 练车人太多，昨天晚上六点多才在考场练车，已经没有真实考试的语音提示系统了。天很快就黑了，场地也看不太清楚，但最难的倒库和侧方停车都没有问题，其他项目也正常，所以只草草练了几把。今天早上去考试结果就挂了。
 第一把，考完倒库和侧方停车感觉还挺不错，语音提示定点准确。虽然踩离合器的腿由于紧张开始不由自主的抖动了，但直角转弯也顺利通过没问题，到了坡道定点停车和起步的时候，停好了车语音提示距离大于30厘米(?记不清)，没有提示定点准确，我就错误地以为还会像前面的项目一样提示定点准确，等了一会儿还是没有声音，就索性准备起步，可能是由于太紧张，踩离合器的腿抖动导致不能稳定的轻抬离合器，松刹车的时候感觉车会熄火（之前的考生有好几个熄火的情况带给了我心理暗示）车居然熄火了。一熄火我就想完了，肯定挂了，准备放弃了。实际上这时候还没有挂，我懵了一下开始重新点火，这时候语音提示熄火。当准备松离合器起步的时候，语音提示坡道定点超过30秒没起步，考试不及格。第一把就这样挂了。
 虽然说有两把机会，但是第一把没有过，第二把只会更紧张导致更难考过。第二把考试虽然更紧张了，但倒库还是没问题。侧方停车时候一直在担心，满脑子都是期待语音提示定位准确的念想，听到语音提示后才想起来打转向灯，直接出库，导致转向灯没到3秒就起步扣掉10分。直角转弯正常。坡道定点又出了两个问题，一是计划中的右侧大于30厘米，二是定位不准确，具体是靠前还是靠后已经记不清楚了，一停车就提示两个错误，考试不及格。
 这次科目二考试算是完全的失败了，从出师不利，到训练受阻，再到考试失败，没有一个环节是成功的。总结一下：
-  出发前未检查证件；
-  考前没有在完全标准的模拟环境中训练；
-  考试时过于紧张；
-  在平时的训练中，没有抓细节，抱有一定的侥幸心态：比如坡道定点右侧距离没有专门练习。
-  还要10天才能重新考试，这几天要重点练习以下几点：
-  坡道定点停车车头准确度；
-  坡道定点停车右侧距离准确度；
-  考试完整流程。
-  </description>
-    </item>
-    
-    <item>
-      <title>2015年的目标及 wishlist</title>
-      <link>https://victoratmaoludotone.github.io/posts/goals-and-wishlist-for-2015/</link>
-      <pubDate>Fri, 20 Feb 2015 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/goals-and-wishlist-for-2015/</guid>
-      <description>农历羊年初一，一整天基本都在床上度过。飘着雨的初二凌晨，也该思考下新一年的计划了。
+出发前未检查证件；
+考前没有在完全标准的模拟环境中训练；
+考试时过于紧张；
+在平时的训练中，没有抓细节，抱有一定的侥幸心态：比如坡道定点右侧距离没有专门练习。
+还要10天才能重新考试，这几天要重点练习以下几点：
+坡道定点停车车头准确度；
+坡道定点停车右侧距离准确度；
+考试完整流程。</description></item><item><title>2015年的目标及 wishlist</title><link>https://victoratmaoludotone.github.io/posts/goals-and-wishlist-for-2015/</link><pubDate>Fri, 20 Feb 2015 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/goals-and-wishlist-for-2015/</guid><description>农历羊年初一，一整天基本都在床上度过。飘着雨的初二凌晨，也该思考下新一年的计划了。
 工作 2014年总体来说比前几年有些进步。忙碌的时间更多，不论这些忙碌的价值有多大，总比什么都不干要强。饶总有句话说的很好，忙也是一年，轻松也是一年，延伸出去，忙也是一辈子，轻松也是一辈子。近10个版本的迭代，以及一些其他的项目，对自己项目执行上有很多帮助。跟项目可能更多的是项目经理的职责，但是在没有项目经理的情况下，产品经理也需要挑起这个重任。我做的还不够好，项目推进过程中总有些跌跌撞撞，多亏了很多同事的帮助。
 对自己最大的不满意是在数据方面，经常忽视数据。没有数据就没有产品自身的进化。拍脑袋/接任务成了产品进化的主要动力，这样显然不是互联网产品的进化方式。
 在2015年，希望自己的能力继续提升，跑的更快一些，具体希望有以下几点：
-  关注数据。既关注平台数据，也关心功能数据。从数据中得出结论提出需求，推进产品进化。在产品上线后关注数据反馈，及时跟进调整。
-  提升产品细节。在项目执行过程中更关心产品的打磨。加强交互/设计层面的把控，不能丢出去不管。
-  增强市场分析能力。了解竞争对手。
-  引入 iOS 的自身的功能，让产品与系统更加融洽。
-  生活 最大的进步可能是自己做饭的次数更多了。以前可能不太注意，自从 DT 得了急性肠胃炎进医院之后，明确了能不在外面吃就不在外面吃的观点。2014年的健身计划基本没能执行。其实还是对自己不够狠。2015年一定要坚持，一则不能浪费健身卡的钱，二则身体是革命的本钱，最近越来越感觉虚的很，三则是体型越来越见不得人了，我也想要帅帅的！14年戒烟也没有成功，15年烟也要戒掉。
+关注数据。既关注平台数据，也关心功能数据。从数据中得出结论提出需求，推进产品进化。在产品上线后关注数据反馈，及时跟进调整。
+提升产品细节。在项目执行过程中更关心产品的打磨。加强交互/设计层面的把控，不能丢出去不管。
+增强市场分析能力。了解竞争对手。
+引入 iOS 的自身的功能，让产品与系统更加融洽。
+生活 最大的进步可能是自己做饭的次数更多了。以前可能不太注意，自从 DT 得了急性肠胃炎进医院之后，明确了能不在外面吃就不在外面吃的观点。2014年的健身计划基本没能执行。其实还是对自己不够狠。2015年一定要坚持，一则不能浪费健身卡的钱，二则身体是革命的本钱，最近越来越感觉虚的很，三则是体型越来越见不得人了，我也想要帅帅的！14年戒烟也没有成功，15年烟也要戒掉。
 买了几本书，也没怎么读。总是有一些奇怪的想法，导致买了一些实际兴趣不是很大的书。新的一年还是多读一些口碑好的专业类书籍。nodejs/python 也只是初步了解了下，在 codecademy 上学完了 python ，一段时间不用，又基本忘完了。自己在编程方面一直有误区，总是觉得语言本身比较重要，其实天下武功唯快不破，精通一门即可。
 14年买了三星 note 3 和 iphone 6 ，note 3 给 DT了，安卓实在用不惯，简直反人类。在深圳汽车限购的条件下抢购了一台菜车，也不得不去学驾照，打乱了我的计划。台式机还是11年配的，三四年了，一直没什么更新的动力，估计暂时不会更新了。 macbook 还是 11 年款的 air ，下一台非移动级计算设备可能也是笔记本。
 2015年的生活计划：
-  增强身体素质。减肥和戒烟。减肥需要有计划的健身和控制饮食，目标140斤；戒烟没什么好说的，必须下狠心。
-  保持灵活的头脑。读10本与工作相关的书；学习编程，使用一门语言写10个有助于工作的的程序。
-  如果 Surface 4 PRO 出来了的话，购买一台。
-  继续维护 牛ROM，但减少其他不相关的服务器支出。
-  </description>
-    </item>
-    
-    <item>
-      <title>选择第三方支付服务商的两个角度</title>
-      <link>https://victoratmaoludotone.github.io/posts/two-aspect-for-choosing-payments-provider/</link>
-      <pubDate>Mon, 12 Jan 2015 13:04:01 +0800</pubDate>
-      
-      <guid>https://victoratmaoludotone.github.io/posts/two-aspect-for-choosing-payments-provider/</guid>
-      <description>从用户的角度：简单又个性 1.验证要素简单 最主要的是要解决预留手机号问题。信用卡和借记卡的在线支付所需要的要素已经有了固定的模式，信用卡需要卡号、有效期、卡片背面后三位数字、柜台预留手机号，借记卡只需要卡号和柜台预留手机号码。验证完这些信息之后，只需要输入短信验证码即可完成支付。在这些标准化信息中，难就难在柜台预留手机号这一项，对于借记卡用户来说，这个号码很可能与正在用户正在使用的手机号不同，甚至与用户接受银行提醒信息的手机号码不同。柜台预留手机号是最近几年才在用户开卡时进行明确提示的，这个信息成了借记卡支付的拦路虎。目前市场上目前只有广州易联支付不需要柜台预留手机号也能支付成功。
+增强身体素质。减肥和戒烟。减肥需要有计划的健身和控制饮食，目标140斤；戒烟没什么好说的，必须下狠心。
+保持灵活的头脑。读10本与工作相关的书；学习编程，使用一门语言写10个有助于工作的的程序。
+如果 Surface 4 PRO 出来了的话，购买一台。
+继续维护 牛ROM，但减少其他不相关的服务器支出。</description></item><item><title>选择第三方支付服务商的两个角度</title><link>https://victoratmaoludotone.github.io/posts/two-aspect-for-choosing-payments-provider/</link><pubDate>Mon, 12 Jan 2015 13:04:01 +0800</pubDate><guid>https://victoratmaoludotone.github.io/posts/two-aspect-for-choosing-payments-provider/</guid><description>从用户的角度：简单又个性 1.验证要素简单 最主要的是要解决预留手机号问题。信用卡和借记卡的在线支付所需要的要素已经有了固定的模式，信用卡需要卡号、有效期、卡片背面后三位数字、柜台预留手机号，借记卡只需要卡号和柜台预留手机号码。验证完这些信息之后，只需要输入短信验证码即可完成支付。在这些标准化信息中，难就难在柜台预留手机号这一项，对于借记卡用户来说，这个号码很可能与正在用户正在使用的手机号不同，甚至与用户接受银行提醒信息的手机号码不同。柜台预留手机号是最近几年才在用户开卡时进行明确提示的，这个信息成了借记卡支付的拦路虎。目前市场上目前只有广州易联支付不需要柜台预留手机号也能支付成功。
 2.支付流程简洁 在今年以前，大部分的第三方支付流程中还需要用户手动选择银行卡类型，如今已经不再需要。原因是目前很多第三方支付已经提供了卡Bin查询接口，可根据用户输入的卡号来自动识别发卡行。但大部分第三方支付不愿意把这个接口暴露给商户，商户如果设计了卡前置类型（商户端绑卡）的流程，则无法让用户免除这一步。目前我接触到的能提供卡Bin查询接口供商户调用的第三方支付服务商只有杭州连连支付。
 总之，能帮用户解决的就不需要自己输入，“别让我思考”。
 3.个性化需求 二次支付：一般来说，目前二次支付的验证信息都比较简单，收短信输入验证码即可。有没有更简单的方式呢？广州易联支付的认证快付和杭州连连支付的小额免密可能是未来的发展方向之一。小额免密暂时还没有接入，但是认证快付我们已经尝试过。这两种功能都是让用户在二次支付的时候直接完成支付，无需密码，无需验证。但对应的风控和用户提示一定要做好。
@@ -508,8 +232,4 @@ $ chmod 700 ~/.ssh/ $ chmod 600 ~/.ssh/authorized_keys 现在，我们可以在 
 目前更流行的模式是按金额收费，一般是千分之五。商户通常更喜欢这种收费模式，因为利润率一般是远大于千分之五的，这样就不必设置最低充值限额，降低用户的首次充值成本。
 3.沟通渠道通畅，内容有价值 电话是一种沟通渠道，但略显呆板，对于较大量的互动也力不从心。目前常见的是使用QQ群沟通，双方的产品、技术、客服都在其中，任何一方有问题随时提出随时解决。也可以使用单独的客服沟通群，降低对其他人的干扰。
 对于稍有经验的第三方支付服务商来说，都会给商户提供常规交易数据，包括人数、次数、金额、成功率、失败原因等。商户可以从失败原因中找到改进的方式。但能否更进一步，如果第三方支付服务商能站在商户和用户角度来体验流程，给商户提供直接的指导会更好。特别是一些小的商户，他们急需这种服务。
-一点总结 目前在基础的流程上，各种第三方支付服务商基本无差别。想要抓住商户，提高市场占有率，需要更多的从服务上下手，比如对用户的失败回访、对商户的流程改进建议等等。</description>
-    </item>
-    
-  </channel>
-</rss>
+一点总结 目前在基础的流程上，各种第三方支付服务商基本无差别。想要抓住商户，提高市场占有率，需要更多的从服务上下手，比如对用户的失败回访、对商户的流程改进建议等等。</description></item></channel></rss>
