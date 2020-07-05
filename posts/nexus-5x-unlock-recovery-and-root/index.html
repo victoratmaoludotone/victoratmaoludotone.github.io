@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.73.0" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="Victor" />
+  <meta property="og:url" content="https://victoratmaoludotone.github.io/posts/nexus-5x-unlock-recovery-and-root/" />
+  <link rel="canonical" href="https://victoratmaoludotone.github.io/posts/nexus-5x-unlock-recovery-and-root/" /><link rel="alternate" type="application/atom+xml" href="https://victoratmaoludotone.github.io/index.xml" title="一间茅庐">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https:\/\/victoratmaoludotone.github.io\/"
+      },
+      "articleSection" : "posts",
+      "name" : "Nexus 5X 解锁 Recovery 并 ROOT",
+      "headline" : "Nexus 5X 解锁 Recovery 并 ROOT",
+      "description" : "注意：\n  进行以下操作会清除手机所有数据，请谨慎。\n  鉴于第一条，建议将手机恢复出厂状态进行操作，避免不必要的错误。\n  本文不适用于 Android N 系统，会导致无限 TEAMWIN 界面。\n   一、安装 Homebrew 和安卓开发者套件 安装 Homebrew（已安装的可以忽略此步骤）：\n$ \/usr\/bin\/ruby -e \u0026#34;$(curl -fsSL https:\/\/raw.githubusercontent.com\/Homebrew\/install\/master\/install)\u0026#34; 安装安卓开发者套件：\n$ brew install android-platform-tools 安装完成后，在终端输入 adb version，应该可以看到 adb 的版本号。\n二、下载 SuperSU 和 TWRP Recovery SuperSU：http:\/\/download.chainfire.eu\/supersu\nTWRP：https:\/\/dl.twrp.me\/bullhead\/\nSuperSU的包为.zip 格式，TWRP的包为.img 格式，两个包下载完后都不要进行解压缩或其他操作，将两个包放到任意一个文件夹中。\n三、打开 USB 调试 在 设置 \u0026gt; 关于手机 中，拉到底部，连续点击 版本号，系统会提示 已开启开发者模式。\n进入 设置 \u0026gt; 开发者选项 中，打开 OEM 解锁 和 USB 调试。使用数据线连接手机，在手机屏幕上会弹出提示是否允许当前计算机进行USB 调试，选择允许。在终端中输入 adb devices，如果连接正常，在 list of devices attached 下方会显示出手机设备的 id。",
+      "inLanguage" : "en-US",
+      "author" : "Victor",
+      "creator" : "Victor",
+      "publisher": "Victor",
+      "accountablePerson" : "Victor",
+      "copyrightHolder" : "Victor",
+      "copyrightYear" : "2016",
+      "datePublished": "2016-06-20 13:04:01 \u002b0800 CST",
+      "dateModified" : "2016-06-20 13:04:01 \u002b0800 CST",
+      "url" : "https:\/\/victoratmaoludotone.github.io\/posts\/nexus-5x-unlock-recovery-and-root\/",
+      "keywords" : [  ]
+  }
+</script>
+<title>Nexus 5X 解锁 Recovery 并 ROOT - 一间茅庐</title>
+  <meta property="og:title" content="Nexus 5X 解锁 Recovery 并 ROOT - 一间茅庐" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="注意：
+  进行以下操作会清除手机所有数据，请谨慎。
+  鉴于第一条，建议将手机恢复出厂状态进行操作，避免不必要的错误。
+  本文不适用于 Android N 系统，会导致无限 TEAMWIN 界面。
+   一、安装 Homebrew 和安卓开发者套件 安装 Homebrew（已安装的可以忽略此步骤）：
+$ /usr/bin/ruby -e &#34;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&#34; 安装安卓开发者套件：
+$ brew install android-platform-tools 安装完成后，在终端输入 adb version，应该可以看到 adb 的版本号。
+二、下载 SuperSU 和 TWRP Recovery SuperSU：http://download.chainfire.eu/supersu
+TWRP：https://dl.twrp.me/bullhead/
+SuperSU的包为.zip 格式，TWRP的包为.img 格式，两个包下载完后都不要进行解压缩或其他操作，将两个包放到任意一个文件夹中。
+三、打开 USB 调试 在 设置 &gt; 关于手机 中，拉到底部，连续点击 版本号，系统会提示 已开启开发者模式。
+进入 设置 &gt; 开发者选项 中，打开 OEM 解锁 和 USB 调试。使用数据线连接手机，在手机屏幕上会弹出提示是否允许当前计算机进行USB 调试，选择允许。在终端中输入 adb devices，如果连接正常，在 list of devices attached 下方会显示出手机设备的 id。" />
+  <meta name="description" content="注意：
+  进行以下操作会清除手机所有数据，请谨慎。
+  鉴于第一条，建议将手机恢复出厂状态进行操作，避免不必要的错误。
+  本文不适用于 Android N 系统，会导致无限 TEAMWIN 界面。
+   一、安装 Homebrew 和安卓开发者套件 安装 Homebrew（已安装的可以忽略此步骤）：
+$ /usr/bin/ruby -e &#34;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&#34; 安装安卓开发者套件：
+$ brew install android-platform-tools 安装完成后，在终端输入 adb version，应该可以看到 adb 的版本号。
+二、下载 SuperSU 和 TWRP Recovery SuperSU：http://download.chainfire.eu/supersu
+TWRP：https://dl.twrp.me/bullhead/
+SuperSU的包为.zip 格式，TWRP的包为.img 格式，两个包下载完后都不要进行解压缩或其他操作，将两个包放到任意一个文件夹中。
+三、打开 USB 调试 在 设置 &gt; 关于手机 中，拉到底部，连续点击 版本号，系统会提示 已开启开发者模式。
+进入 设置 &gt; 开发者选项 中，打开 OEM 解锁 和 USB 调试。使用数据线连接手机，在手机屏幕上会弹出提示是否允许当前计算机进行USB 调试，选择允许。在终端中输入 adb devices，如果连接正常，在 list of devices attached 下方会显示出手机设备的 id。" />
+  <meta property="og:locale" content="en-us" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+
+  
+
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="一间茅庐">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  
+</head>
+
+<body>
+  <article class="post " id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">maolu.one</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">Nexus 5X 解锁 Recovery 并 ROOT</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2016-06-20 13:04:01 CST">
+                20 Jun 2016
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://maolu.one/">@Victor</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <blockquote>
+<p>注意：</p>
+<ol>
+<li>
+<p>进行以下操作会清除手机所有数据，请谨慎。</p>
+</li>
+<li>
+<p>鉴于第一条，建议将手机恢复出厂状态进行操作，避免不必要的错误。</p>
+</li>
+<li>
+<p>本文不适用于 Android N 系统，会导致无限 TEAMWIN 界面。</p>
+</li>
+</ol>
+</blockquote>
+<h2 id="一安装-homebrew-和安卓开发者套件">一、安装 Homebrew 和安卓开发者套件</h2>
+<p>安装 Homebrew（已安装的可以忽略此步骤）：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ /usr/bin/ruby -e <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+</code></pre></div><p>安装安卓开发者套件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ brew install android-platform-tools
+</code></pre></div><p>安装完成后，在终端输入 <code>adb version</code>，应该可以看到 adb 的版本号。</p>
+<h2 id="二下载-supersu-和-twrp-recovery">二、下载 SuperSU 和 TWRP Recovery</h2>
+<p>SuperSU：<a href="http://download.chainfire.eu/supersu"  target="_blank" >http://download.chainfire.eu/supersu</a></p>
+<p>TWRP：<a href="https://dl.twrp.me/bullhead/"  target="_blank" >https://dl.twrp.me/bullhead/</a></p>
+<p>SuperSU的包为<code>.zip</code> 格式，TWRP的包为<code>.img</code> 格式，两个包下载完后都不要进行解压缩或其他操作，将两个包放到任意一个文件夹中。</p>
+<h2 id="三打开-usb-调试">三、打开 USB 调试</h2>
+<p>在 <em><strong>设置 &gt; 关于手机</strong></em> 中，拉到底部，连续点击 <em><strong>版本号</strong></em>，系统会提示 <em><strong>已开启开发者模式</strong></em>。</p>
+<p>进入 <em><strong>设置 &gt; 开发者选项</strong></em> 中，打开 <em><strong>OEM 解锁</strong></em> 和 <em><strong>USB 调试</strong></em>。使用数据线连接手机，在手机屏幕上会弹出提示是否允许当前计算机进行USB 调试，选择允许。在终端中输入 <code>adb devices</code>，如果连接正常，在 list of devices attached 下方会显示出手机设备的 id。</p>
+<h2 id="四解锁-bootloader-并输入-twrp-recovery">四、解锁 Bootloader 并输入 TWRP Recovery</h2>
+<blockquote>
+<p>注意：解锁将清除手机所有数据。</p>
+</blockquote>
+<p>在 Shell 中，输入<code>adb reboot bootloader</code>，手机会重启进入 Bootloader 状态。如果之前没有解锁过，在 Bootloader 中，底部的 DEVICE STATE 会显示为 locked 状态。在 Shell 中，输入 <code>fastboot oem unlock</code>，手机屏幕将会提示是否解锁，使用音量键选中 YES，按电源键确定，手机将解锁。接着进行下一步。</p>
+<p>在 Shell 中，输入 <code>fastboot flash recovery</code> ，不要回车，将下载的 twrp recovery 拖到 Shell 中，构成完整的命令。按下回车，开始刷入。</p>
+<p>在手机上使用音量上下键，切换到 <em><strong>Restart bootloader</strong></em> 选项，然后按电源键，重启到 Bootloader，然后再使用音量键，切换到 Recovery mode，按电源键，重启到 Recovery 环境。如果刷入成功，你将看到 TEAMWIN 的 Recovery 启动画面并进入 TWRP Recovery。</p>
+<h2 id="五安装-supersu">五、安装 SuperSU</h2>
+<p>在 TWRP Recovery 中，选择 <em><strong>Reboot &gt; System</strong></em>，重启手机。将下载的 SuperSU 放到手机的 Download 文件夹中。我在 OS X 中使用的 <em><strong>Android File Transfer</strong></em> 进行文件传输。</p>
+<p>输入<code>adb reboot recovery</code>，重启手机，并进入 TWRP Recovery。选择 <em><strong>Install</strong></em>，进入 Download 文件夹，选择下载的 SuperSU 文件，滑动底部滑块，开始刷入。刷完之后，选择 <em><strong>Wipe cache/dalvik</strong></em>，然后选择 <em><strong>Reboot System</strong></em> 进入系统。进入系统后，应用中应该有了 SuperSU，ROOT完成。</p>
+
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="//categories/tech/">
+                Tech
+              </a>
+            </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://victoratmaoludotone.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="https://t.me/vz_tg" target="_blank">My Telegram</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/joway/hugo-theme-yinyang" target="_blank">Theme YinYang</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+</body>
+
+</html>
