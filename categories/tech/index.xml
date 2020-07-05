@@ -1,39 +1,205 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tech on 一间茅庐</title><link>https://maolu.one/categories/tech/</link><description>Recent content in Tech on 一间茅庐</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 16 Jun 2020 11:16:23 +0800</lastBuildDate><atom:link href="https://maolu.one/categories/tech/index.xml" rel="self" type="application/rss+xml"/><item><title>使用 rsync 备份群晖资料到 VPS</title><link>https://maolu.one/posts/backup-synogy-to-vps-using-rsync/</link><pubDate>Tue, 16 Jun 2020 11:16:23 +0800</pubDate><guid>https://maolu.one/posts/backup-synogy-to-vps-using-rsync/</guid><description>虽然家里的群晖做了 RAID 1，但看到有帖子说有人家里火灾导致 NAS 的热备份和硬盘的冷备份全部丢失，再加上最近在家赋闲，又想着折腾一番。
-一、为什么要使用 VPS 作为备份目的地 首先，我需要 500GB 以上的存储容量。市面上有很多选择，比如：
-大公司做个人和企业云存储的服务，例如 Microsoft OneDrive（1TB $69.99/年）、Google One（2 TB $100/年） 等； 文件同步备份类型，如 Dropbox（2TB $119.88/年） 等； 小公司专业做备份的，如 CrashPlan（无限容量 $120/年） 等； 云计算公司的对象存储，如亚马逊和阿里巴巴对象存储等，此类存储空间、进出流量、请求次数都要收费，仅计算存储空间费用，以阿里巴巴为例，500GB 的存储空间一年就需要 $70.2。 大部分服务对于我来说太贵了，因为他们提供了更多的价值，例如版本控制，或者数不清几个 9 的服务保证。而我不想为这些额外的功能付费。唯一价格不错的，是 Onedrive。但群晖的 CloudSync 对 Onedrive 的支持似乎有问题，目前我尚未解决此问题，似乎与账号有关。若能找到 6 个人合买 Microsoft 365，那价格的优势就很大（特别是，如果你选择中国区的话），显然我也有动力全力解决此问题。（已确认是账号问题，更换账号后能关联账户，但测试了一下速度只有几百 KB/s，所以暂时不考虑。）
-我选择的 Alpha VPS，位于保加利亚，1 TB 存储空间，每月 3TB 流量，每年只需要 60 欧元（约 $68）。如果选择更低的容量，则价格会更便宜。虽然 VPS 完全是裸机，没有附加功能（除非你愿意去学习一些软件的配置），但因为有 RAID 1 和移动硬盘的冷备份，对安全性要求没那么高，所以对于单纯的异地备份来说已经够用了。经过一天的测试，上传速度有 1.x MB/S，已经超过我的预期了，毕竟服务器在保加利亚那么遥远的地方。
-二、如何在群晖上创建备份文件 为了存取方便，需要将每个图片文件夹分别打包，这样上传和下载都比较方便。但我之前的目录命名中有一些有空格，用脚本处理起来有些困难。所以就有了本文中两段小脚本。
-批量移除文件名中的空格：
-for loop in ls -1 | tr &amp;#39; &amp;#39; &amp;#39;#&amp;#39; do mv &amp;#34;echo $loop| sed &amp;#39;s/#/ /g&amp;#39;&amp;#34; &amp;#34;echo $loop|sed &amp;#39;s/#//g&amp;#39;&amp;#34; 2&amp;gt; /dev/null done 然后再使用 tar 将目录分别打包即可：</description></item><item><title>解决 Lean 固件编译后无 SSR-Plus 的问题</title><link>https://maolu.one/posts/add-ssr-plus-in-lean-openwrt-firmware/</link><pubDate>Tue, 19 May 2020 12:43:21 +0800</pubDate><guid>https://maolu.one/posts/add-ssr-plus-in-lean-openwrt-firmware/</guid><description>在最近的更新后，Lean 源码中删除了 SSR Plus + 功能模块。在编译路由器固件过程中，进入 Luci-Application 菜单后，找不到 luci-app-ssr-plus 选项，当然也就无法编译这一模块。
-如果是初次编译，git clone 完成后，修改 feeds.conf.default 文件，将：
-# src-git helloworld https://github.com/fw876/helloworld 前面的 # 去掉，修改为：
-src-git helloworld https://github.com/fw876/helloworld 再进行 make menuconfig 等命令进行编译即可。
-如果是二次编译，则执行以下命令：
-$ git pull $ rm -rf ./tmp &amp;amp;&amp;amp; rm -rf .config 再编辑 feeds.config.default 文件，将 helloworld 一行前的 # 去掉。然后更新 feeds：
-$ ./scripts/feeds clean $ ./scripts/feeds update -a &amp;amp;&amp;amp; ./scripts/feeds install -a 再进行 make menuconfig 等命令进行编译即可。</description></item><item><title>UBNT ER-X 刷 Open-WRT 并作为透明网关</title><link>https://maolu.one/posts/openwrt-on-erx-for-transparent-gateway/</link><pubDate>Tue, 07 Apr 2020 13:04:01 +0800</pubDate><guid>https://maolu.one/posts/openwrt-on-erx-for-transparent-gateway/</guid><description>一直想在家庭网络中增加一个透明网关，达到让网络中所有设备在访问国外网站时自动使用代理的功能。家中本身有一个 3215U + 4 千兆网口的工控机，但嫌弃其电源实在占位置所以没启用。最近才觉察到 UniFi Switch 8 POE 150W 的网口是可以自定义 PoE+ 或 24V Passive PoE 供电的，因为 ER-X 本身体积就小，又支持 24V Passive PoE 供电，这样就可以节省充电器和充电线，仅用一根网线即可供电和数据传输，简约而不简单。
-一、编译 ER-X Open-WRT 固件 因为官方 Open-WRT 的固件内容比较素，缺乏必备的 ShadowsocksR Plus 等插件，所以我采用 Lean 的 Open-WRT 固件自行编译。编译此固件是需要编译机可无障碍访问国外部分网站，在虚拟机上使用：
-$ export all_proxy=&amp;#34;socks5://your.proxy:1080&amp;#34; 尝试编译，依然失败，提示有文件无法下载。所以我最终采用在一台 Google Cloud Engine 机器上编译。编译时按照指引，在 make menuconfig 时：
-Target System 选择 MediaTek Ralink MIPS
-Subtarget 选择 MT7621 based boards
-Target Profile 选择 EdgeRouter X</description></item><item><title>非对称加密的基本原理</title><link>https://maolu.one/posts/basic-principles-of-asymmetric-encryption/</link><pubDate>Fri, 14 Jun 2019 13:04:01 +0800</pubDate><guid>https://maolu.one/posts/basic-principles-of-asymmetric-encryption/</guid><description>非对称加密算法需要两个密钥：公开密钥（publickey，简称公钥）和私有密钥（privatekey，简称私钥）。公钥与私钥是一对，如果用公钥对数据进行加密，只有用对应的私钥才能解密。因为加密和解密使用的是两个不同的密钥，所以这种算法叫作非对称加密算法。
-非对称加密算法实现机密信息交换的基本过程是：
-甲方生成一对密钥并将公钥公开；
-需要向甲方发送信息的其他角色(乙方)使用该密钥(甲方的公钥)对机密信息进行加密后再发送给甲方；
-甲方用自己私钥对加密后的信息进行解密。
-甲方想要回复乙方时正好相反，使用乙方的公钥对数据进行加密，同理，乙方使用自己的私钥来进行解密。</description></item><item><title>Nexus 5X 解锁 Recovery 并 ROOT</title><link>https://maolu.one/posts/nexus-5x-unlock-recovery-and-root/</link><pubDate>Mon, 20 Jun 2016 13:04:01 +0800</pubDate><guid>https://maolu.one/posts/nexus-5x-unlock-recovery-and-root/</guid><description>注意：
-进行以下操作会清除手机所有数据，请谨慎。
-鉴于第一条，建议将手机恢复出厂状态进行操作，避免不必要的错误。
-本文不适用于 Android N 系统，会导致无限 TEAMWIN 界面。
-一、安装 Homebrew 和安卓开发者套件 安装 Homebrew（已安装的可以忽略此步骤）：
-$ /usr/bin/ruby -e &amp;#34;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&amp;#34; 安装安卓开发者套件：
-$ brew install android-platform-tools 安装完成后，在终端输入 adb version，应该可以看到 adb 的版本号。
-二、下载 SuperSU 和 TWRP Recovery SuperSU：http://download.chainfire.eu/supersu
-TWRP：https://dl.twrp.me/bullhead/
-SuperSU的包为.zip 格式，TWRP的包为.img 格式，两个包下载完后都不要进行解压缩或其他操作，将两个包放到任意一个文件夹中。
-三、打开 USB 调试 在 设置 &amp;gt; 关于手机 中，拉到底部，连续点击 版本号，系统会提示 已开启开发者模式。
-进入 设置 &amp;gt; 开发者选项 中，打开 OEM 解锁 和 USB 调试。使用数据线连接手机，在手机屏幕上会弹出提示是否允许当前计算机进行USB 调试，选择允许。在终端中输入 adb devices，如果连接正常，在 list of devices attached 下方会显示出手机设备的 id。</description></item><item><title>macOS 使用 ssh key 登陆服务器</title><link>https://maolu.one/posts/login-server-using-ssh-key-on-macos/</link><pubDate>Sat, 18 Jul 2015 13:04:01 +0800</pubDate><guid>https://maolu.one/posts/login-server-using-ssh-key-on-macos/</guid><description>先生成公钥和私钥，在 Mac OSX 终端（或 iTerm 2 等）中进入 ~/.ssh 目录，输入：
-$ ssh-keygen -t rsa 会询问一些问题，直接全部回车，即可在 ~/.ssh 目录中生成 id_rsa（私钥） 和 id_rsa.pub（公钥）文件。我们需要将公钥上传到 testhost 服务器的 ~/.ssh 目录下面，因为第二种方式中我们已经配置了 testhost 服务器，scp 也能识别这个服务器，所以，可以使用如下命令将文件传输到 testhost 服务器中：
-$ scp ~/.ssh/id_rsa.pub testhost:~/.ssh/ 接下来，用第二种方式登录到 testhost 服务器中，在 ~/.ssh 目录中使用以下命令将 id_rsa.pub 更名为 authorized_keys：
-$ mv id_rsa.pub authorized_keys 最后确保下文件权限正常：
-$ chmod 700 ~/.ssh/ $ chmod 600 ~/.ssh/authorized_keys 现在，我们可以在 Mac OSX 的终端中使用 ssh testhost 登录到 testhost 服务器了，无需输入密码，更无需记忆服务器参数。
-如果无法连接，请在服务器的 /etc/ssh/sshd_config 文件中查看 PubkeyAuthentication 的值是否为 yes，如果不是，请修改为 yes ，并使用以下命令重启 ssh 服务：</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tech on 一间茅庐</title><link>https://maolu.one/categories/tech/</link><description>Recent content in Tech on 一间茅庐</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 16 Jun 2020 11:16:23 +0800</lastBuildDate><atom:link href="https://maolu.one/categories/tech/index.xml" rel="self" type="application/rss+xml"/><item><title>使用 rsync 备份群晖资料到 VPS</title><link>https://maolu.one/posts/backup-synogy-to-vps-using-rsync/</link><pubDate>Tue, 16 Jun 2020 11:16:23 +0800</pubDate><guid>https://maolu.one/posts/backup-synogy-to-vps-using-rsync/</guid><description>&lt;p>虽然家里的群晖做了 RAID 1，但看到有帖子说有人家里火灾导致 NAS 的热备份和硬盘的冷备份全部丢失，再加上最近在家赋闲，又想着折腾一番。&lt;/p>
+&lt;h2 id="一为什么要使用-vps-作为备份目的地">一、为什么要使用 VPS 作为备份目的地&lt;/h2>
+&lt;p>首先，我需要 500GB 以上的存储容量。市面上有很多选择，比如：&lt;/p>
+&lt;ul>
+&lt;li>大公司做个人和企业云存储的服务，例如 Microsoft OneDrive（1TB $69.99/年）、Google One（2 TB $100/年） 等；&lt;/li>
+&lt;li>文件同步备份类型，如 Dropbox（2TB $119.88/年） 等；&lt;/li>
+&lt;li>小公司专业做备份的，如 CrashPlan（无限容量 $120/年） 等；&lt;/li>
+&lt;li>云计算公司的对象存储，如亚马逊和阿里巴巴对象存储等，此类存储空间、进出流量、请求次数都要收费，仅计算存储空间费用，以阿里巴巴为例，500GB 的存储空间一年就需要 $70.2。&lt;/li>
+&lt;/ul>
+&lt;p>大部分服务对于我来说太贵了，因为他们提供了更多的价值，例如版本控制，或者数不清几个 9 的服务保证。而我不想为这些额外的功能付费。唯一价格不错的，是 Onedrive。但群晖的 CloudSync 对 Onedrive 的支持似乎有问题，目前我尚未解决此问题，似乎与账号有关。若能找到 6 个人合买 Microsoft 365，那价格的优势就很大（特别是，如果你选择中国区的话），显然我也有动力全力解决此问题。（已确认是账号问题，更换账号后能关联账户，但测试了一下速度只有几百 KB/s，所以暂时不考虑。）&lt;/p>
+&lt;p>我选择的 Alpha VPS，位于保加利亚，1 TB 存储空间，每月 3TB 流量，每年只需要 60 欧元（约 $68）。如果选择更低的容量，则价格会更便宜。虽然 VPS 完全是裸机，没有附加功能（除非你愿意去学习一些软件的配置），但因为有 RAID 1 和移动硬盘的冷备份，对安全性要求没那么高，所以对于单纯的异地备份来说已经够用了。经过一天的测试，上传速度有 1.x MB/S，已经超过我的预期了，毕竟服务器在保加利亚那么遥远的地方。&lt;/p>
+&lt;h2 id="二如何在群晖上创建备份文件">二、如何在群晖上创建备份文件&lt;/h2>
+&lt;p>为了存取方便，需要将每个图片文件夹分别打包，这样上传和下载都比较方便。但我之前的目录命名中有一些有空格，用脚本处理起来有些困难。所以就有了本文中两段小脚本。&lt;/p>
+&lt;p>批量移除文件名中的空格：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#66d9ef">for&lt;/span> loop in ls -1 | tr &lt;span style="color:#e6db74">&amp;#39; &amp;#39;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;#&amp;#39;&lt;/span>
+&lt;span style="color:#66d9ef">do&lt;/span>
+mv &lt;span style="color:#e6db74">&amp;#34;echo &lt;/span>$loop&lt;span style="color:#e6db74"> | sed &amp;#39;s/#/ /g&amp;#39;&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;echo &lt;/span>$loop&lt;span style="color:#e6db74"> |sed &amp;#39;s/#//g&amp;#39;&amp;#34;&lt;/span> 2&amp;gt; /dev/null
+&lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后再使用 tar 将目录分别打包即可：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#66d9ef">for&lt;/span> dir in &lt;span style="color:#66d9ef">$(&lt;/span>ls | grep -v &lt;span style="color:#e6db74">&amp;#39;@&amp;#39;&lt;/span>&lt;span style="color:#66d9ef">)&lt;/span>
+&lt;span style="color:#66d9ef">do&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> -d $dir &lt;span style="color:#f92672">]&amp;amp;&amp;amp;[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$dir&lt;span style="color:#e6db74">&amp;#34;&lt;/span>x !&lt;span style="color:#f92672">=&lt;/span> photobackupx &lt;span style="color:#f92672">]&lt;/span>
+&lt;span style="color:#66d9ef">then&lt;/span>
+tar -cvf $dir.tar $dir/ --exclude @eaDir --exclude .DS_Store --exclude Thumbs.db
+&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>上面 ls 后 grep -v 是为了去除文件名包含 @ 字符的文件或目录。tar 后跟的 –exclude 也是一样。这些要去除的都是群晖或者 macOS 的一些烦人的玩意儿。当然，如果需要增强安全性，可以使用 zip 或者 p7zip 创建有密码的包，例如：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#66d9ef">for&lt;/span> dir in &lt;span style="color:#66d9ef">$(&lt;/span>ls&lt;span style="color:#66d9ef">)&lt;/span>;
+&lt;span style="color:#66d9ef">do&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> -d $dir &lt;span style="color:#f92672">]&lt;/span>
+&lt;span style="color:#66d9ef">then&lt;/span>
+zip -r0P password $dir.zip ./$dir/
+&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="三如何将备份文件上传到-vps">三、如何将备份文件上传到 VPS&lt;/h2>
+&lt;p>因为数据量有数百 GB，所以传输这些文件遇到了一些问题。&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>SCP。 SCP 不支持断点续传，且如果需要批量上传的话，需要再写脚本（今天才知道 SCP 支持目录上传），对于大文件来讲，99% 中断掉的话难以接受。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Resilio Sync。Tracker 服务器（如果可以这么称呼的话）已被关注，无法直接链接。且尝试了一下，速度不是很稳定。而且此应用可能被识别为 P2P 程序，服务商不允许。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>minio。高大上，但过于复杂，我没有学会如何通过命令行或者接口上传，开着网页上传非常不稳定。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>今天尝试了一下传说中的 rsync，因为我是首次同步，SSH 到群晖上，只需要一条命令即可：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ rsync -avuP ./ root@remote_server_ip:~/PhotoBackup
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>-a 表示已归档方式，-v 显示进度，-u 表示不覆盖已存在的文件，-P 表示支持断点续传。rsync 命令格式与 SCP 基本类似。一般服务器系统都预装了 rsync，没想到群晖系统也内置了 rsync，可见此程序的使用范围非常广泛。这次只是使用了它极为基础的功能，后续也可以设置定时任务来做增量同步功能。&lt;/p></description></item><item><title>解决 Lean 固件编译后无 SSR-Plus 的问题</title><link>https://maolu.one/posts/add-ssr-plus-in-lean-openwrt-firmware/</link><pubDate>Tue, 19 May 2020 12:43:21 +0800</pubDate><guid>https://maolu.one/posts/add-ssr-plus-in-lean-openwrt-firmware/</guid><description>&lt;p>在最近的更新后，Lean 源码中删除了 SSR Plus + 功能模块。在编译路由器固件过程中，进入 Luci-Application 菜单后，找不到 luci-app-ssr-plus 选项，当然也就无法编译这一模块。&lt;/p>
+&lt;p>如果是初次编译，git clone 完成后，修改 feeds.conf.default 文件，将：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># src-git helloworld https://github.com/fw876/helloworld&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>前面的 # 去掉，修改为：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">src-git helloworld https://github.com/fw876/helloworld
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>再进行 &lt;code>make menuconfig&lt;/code> 等命令进行编译即可。&lt;/p>
+&lt;p>如果是二次编译，则执行以下命令：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ git pull
+$ rm -rf ./tmp &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf .config
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>再编辑 feeds.config.default 文件，将 helloworld 一行前的 # 去掉。然后更新 feeds：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ ./scripts/feeds clean
+$ ./scripts/feeds update -a &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> ./scripts/feeds install -a
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>再进行 &lt;code>make menuconfig&lt;/code> 等命令进行编译即可。&lt;/p></description></item><item><title>UBNT ER-X 刷 Open-WRT 并作为透明网关</title><link>https://maolu.one/posts/openwrt-on-erx-for-transparent-gateway/</link><pubDate>Tue, 07 Apr 2020 13:04:01 +0800</pubDate><guid>https://maolu.one/posts/openwrt-on-erx-for-transparent-gateway/</guid><description>&lt;p>一直想在家庭网络中增加一个透明网关，达到让网络中所有设备在访问国外网站时自动使用代理的功能。家中本身有一个 3215U + 4 千兆网口的工控机，但嫌弃其电源实在占位置所以没启用。最近才觉察到 UniFi Switch 8 POE 150W 的网口是可以自定义 PoE+ 或 24V Passive PoE 供电的，因为 ER-X 本身体积就小，又支持 24V Passive PoE 供电，这样就可以节省充电器和充电线，仅用一根网线即可供电和数据传输，简约而不简单。&lt;/p>
+&lt;h2 id="一编译-er-x-open-wrt-固件">一、编译 ER-X Open-WRT 固件&lt;/h2>
+&lt;p>因为官方 Open-WRT 的固件内容比较素，缺乏必备的 ShadowsocksR Plus 等插件，所以我采用 Lean 的 Open-WRT 固件自行编译。编译此固件是需要编译机可无障碍访问国外部分网站，在虚拟机上使用：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ export all_proxy&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;socks5://your.proxy:1080&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>尝试编译，依然失败，提示有文件无法下载。所以我最终采用在一台 Google Cloud Engine 机器上编译。编译时按照指引，在 make menuconfig 时：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Target System 选择 MediaTek Ralink MIPS&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Subtarget 选择 MT7621 based boards&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Target Profile 选择 EdgeRouter X&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>其余选项不需要动，除非你明白为什么需要动。其他默认参数已经包含了 ShadowsocksR Plus、Adbyby Plus+、KMS服务器等常用功能。&lt;/p>
+&lt;p>在最近的更新后，Lean 源码中删除了 SSR Plus + 功能模块。请参考此文做一些修改：解决 Lean 固件编译后无 SSR-Plus + 的问题&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>&lt;/p>
+&lt;p>编译好的固件位于 /lede/bin/targets/ramips/mt7621 目录下。可使用以下语句将其下载到本地：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">// 自行修改 username、ip、/path/to/lede、/path/to/destination
+// kernel
+$ scp username@ip:/path/to/lede/bin/targets/ramips/mt7621/openwrt-ramips-mt7621-ubiquiti_edgerouterx-initramfs-kerne.bin /path/to/destination
+// firmware
+$ scp username@ip:/path/to/lede/bin/targets/ramips/mt7621/openwrt-ramips-mt7621-ubiquiti_edgerouterx-squashfs-sysupgrade.bin /path/to/destination
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="二将-open-wrt-刷入-er-x">二、将 Open-WRT 刷入 ER-X&lt;/h2>
+&lt;p>参考 Open-WRT 官网的教程，很容易即可将 Open-WRT 刷入ER-X。主要需要两步，一是将官方固件刷写为 Open-WRT 的 Kernel，我称之为过渡固件；而是从过渡固件刷写为正式固件。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">// 上传并刷写过渡固件，假设 ER-X IP 为 192.168.1.1，自行替换 /path/to
+$ scp /path/to/openwrt-ramips-mt7621-ubnt-erx-initramfs-kernel.bin ubnt@192.168.1.1:/tmp
+$ ssh ubnt@192.168.1.1
+ubnt@ubnt:~$ cd /tmp
+ubnt@ubnt:/tmp$ add system image openwrt-ramips-mt7621-ubnt-erx-initramfs-kernel.bin
+Checking upgrade image...Done
+Preparing to upgrade...Done
+Copying upgrade image.../usr/bin/ubnt-upgrade: line 509: &lt;span style="color:#f92672">[&lt;/span>: too many arguments
+Done
+Removing old image...Done
+Checking upgrade image...Done
+Copying config data...Done
+Finishing upgrade...Done
+Upgrade completed
+ubnt@ubnt:/tmp$ show system image
+The system currently has the following image&lt;span style="color:#f92672">(&lt;/span>s&lt;span style="color:#f92672">)&lt;/span> installed:
+ramips Bleeding Edge r49395 &lt;span style="color:#f92672">(&lt;/span>default boot&lt;span style="color:#f92672">)&lt;/span>
+v1.7.1.4821926.151103.1114 &lt;span style="color:#f92672">(&lt;/span>running image&lt;span style="color:#f92672">)&lt;/span>
+A reboot is needed to boot default image
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果刷写时，出现以下错误提示：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">ubnt@ubnt:/tmp$ add system image openwrt-ramips-mt7621-ubnt-erx-initramfs-kernel.bin
+Checking upgrade image...Upgrade image does not support the device. Upgrade failed.
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>则需要使用老版本的 Kenel 文件&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>刷入，步骤一样。&lt;/p>
+&lt;p>当过渡固件刷入后，输入&lt;code>reboot&lt;/code>，重启 ER-X，等待重启完成后，可使用 SSH 重新登陆到 ER-X中。此时 ER-X 中已经是 Open-WRT 过渡固件，所以需要使用 root 用户登录。&lt;/p>
+&lt;p>使用 SCP 上传正式固件到 ER-X 中，再登陆 ER-X。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ scp /path/to/openwrt-ramips-mt7621-ubiquiti_edgerouterx-squashfs-sysupgrade.bin root@192.168.1.1:/tmp
+$ ssh root@192.168.1.1
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>进入上传的正式版固件所在的目录，并进行刷写操作。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ cd /tmp
+$ sysupgrade openwrt-ramips-mt7621-ubiquiti_edgerouterx-squashfs-sysupgrade.bin
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>等待一会儿，正式固件即可刷入成功并自动重启。重启完成后，即可登陆 Open-WRT 的 Web 管理界面。因为我们刷入的是 Lean 制作的固件，所以登陆账户为 root，密码为 password，可登陆后自行修改。&lt;/p>
+&lt;h2 id="三设置-er-x-为透明网关">三、设置 ER-X 为透明网关&lt;/h2>
+&lt;p>设置为透明网关的目的，是让局域网内其他机器能自动加速国外网站的访问，无需特殊设置。其基本操作，是在 Open-WRT 上建立加速服务，由主路由器（假设为 192.168.1.1）将 Open-WRT 的地址下发到局域网中的所有设备上。&lt;/p>
+&lt;p>&lt;strong>&lt;img src="https://maolu.one/images/network-structure-1-1024x485.png" alt="network-structure-1-1024x485">&lt;/strong>&lt;/p>
+&lt;p>&lt;strong>第一步，先要将 Open-WRT 设置为局域网内的网关。&lt;/strong>&lt;/p>
+&lt;p>选取一个局域网内未使用的 IP 地址，将 Open-WRT 的 Lan 口设置为此静态地址，比如：192.168.1.2，子网掩码：255.255.255.0；网关：192.168.1.1，DNS 设置为192.168.1.1。由于我们依旧使用主路由器做 DHCP，所以需要将 Lan 的 DHCP 服务器关掉（忽略此接口）。然后将 Open-WRT 的 Lan 口连接到交换机或路由器的 Lan 口，如果可以的话，在路由器端也将此 Open-WRT 设备的 IP 设置为固定IP（192.168.1.2）。&lt;/p>
+&lt;p>&lt;img src="https://maolu.one/images/open-wrt-lan-settings-1200x1322.png" alt="open-wrt-lan-settings-1200x1322">&lt;/p>
+&lt;p>&lt;strong>第二步，将主路由器的网关设置为 Open-WRT（192.168.1.2）。&lt;/strong>&lt;/p>
+&lt;p>以 Ubnt Unifi 控制器为例，在 &lt;em>&lt;strong>Settings &amp;gt; Networks &amp;gt; LAN &amp;gt; DHCP Controls&lt;/strong>&lt;/em> 中，将 &lt;em>&lt;strong>DHCP Gateway IP&lt;/strong>&lt;/em> 设置为 Open-WRT 的 IP 192.168.1.2。&lt;/p>
+&lt;p>&lt;img src="https://maolu.one/images/open-wrt-gateway-settings-1024x832.png" alt="open-wrt-gateway-settings-1024x832">&lt;/p>
+&lt;p>为测试是否正常，我们将电脑的网络断开重新连接，观察网关 IP 是否已自动获取为 Open-WRT 的 IP，并测试是否能正常上网。如果网关 IP 已修改，且能正常上网，则可以进行下一步。&lt;/p>
+&lt;p>&lt;strong>第三步，在 Open-WRT 上开启国外网站加速功能&lt;/strong>。&lt;/p>
+&lt;p>进入 &lt;em>&lt;strong>Open-WRT &amp;gt; 服务 &amp;gt; ShadowsocksR Plus + &amp;gt; 服务器节点&lt;/strong>&lt;/em> 中，添加节点或订阅（订阅需更新），然后进入同页面的的「客户端」中，选择一个节点，点击「保存&amp;amp;应用」，待页面显示「ShadowsocksR Plus+ 运行中」，即可使用电脑测试是否能正常网络加速。&lt;/p>
+&lt;section class="footnotes" role="doc-endnotes">
+&lt;hr>
+&lt;ol>
+&lt;li id="fn:1" role="doc-endnote">
+&lt;p>&lt;a href="https://maolu.one/posts/add-ssr-plus-in-lean-openwrt-firmware/" >解决 Lean 固件编译后无 SSR-Plus 的问题&lt;/a> &lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li id="fn:2" role="doc-endnote">
+&lt;p>&lt;a href="http://openwrt.jaru.eu.org/openwrt-18.06/targets/ramips/mt7621/openwrt-18.06-snapshot-r7911-f65330d27d-ramips-mt7621-ubnt-erx-initramfs-factory.tar" target="_blank" >老版本的 Kernel 文件&lt;/a> &lt;a href="#fnref:2" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;/section></description></item><item><title>非对称加密的基本原理</title><link>https://maolu.one/posts/basic-principles-of-asymmetric-encryption/</link><pubDate>Fri, 14 Jun 2019 13:04:01 +0800</pubDate><guid>https://maolu.one/posts/basic-principles-of-asymmetric-encryption/</guid><description>&lt;p>非对称加密算法需要两个密钥：公开密钥（publickey，简称公钥）和私有密钥（privatekey，简称私钥）。公钥与私钥是一对，如果用公钥对数据进行加密，只有用对应的私钥才能解密。因为加密和解密使用的是两个不同的密钥，所以这种算法叫作非对称加密算法。&lt;/p>
+&lt;p>非对称加密算法实现机密信息交换的基本过程是：&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>甲方生成一对密钥并将公钥公开；&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>需要向甲方发送信息的其他角色(乙方)使用该密钥(甲方的公钥)对机密信息进行加密后再发送给甲方；&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>甲方用自己私钥对加密后的信息进行解密。&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>甲方想要回复乙方时正好相反，使用乙方的公钥对数据进行加密，同理，乙方使用自己的私钥来进行解密。&lt;/p></description></item><item><title>Nexus 5X 解锁 Recovery 并 ROOT</title><link>https://maolu.one/posts/nexus-5x-unlock-recovery-and-root/</link><pubDate>Mon, 20 Jun 2016 13:04:01 +0800</pubDate><guid>https://maolu.one/posts/nexus-5x-unlock-recovery-and-root/</guid><description>&lt;blockquote>
+&lt;p>注意：&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>进行以下操作会清除手机所有数据，请谨慎。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>鉴于第一条，建议将手机恢复出厂状态进行操作，避免不必要的错误。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>本文不适用于 Android N 系统，会导致无限 TEAMWIN 界面。&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;/blockquote>
+&lt;h2 id="一安装-homebrew-和安卓开发者套件">一、安装 Homebrew 和安卓开发者套件&lt;/h2>
+&lt;p>安装 Homebrew（已安装的可以忽略此步骤）：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ /usr/bin/ruby -e &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>安装安卓开发者套件：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ brew install android-platform-tools
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>安装完成后，在终端输入 &lt;code>adb version&lt;/code>，应该可以看到 adb 的版本号。&lt;/p>
+&lt;h2 id="二下载-supersu-和-twrp-recovery">二、下载 SuperSU 和 TWRP Recovery&lt;/h2>
+&lt;p>SuperSU：&lt;a href="http://download.chainfire.eu/supersu" target="_blank" >http://download.chainfire.eu/supersu&lt;/a>&lt;/p>
+&lt;p>TWRP：&lt;a href="https://dl.twrp.me/bullhead/" target="_blank" >https://dl.twrp.me/bullhead/&lt;/a>&lt;/p>
+&lt;p>SuperSU的包为&lt;code>.zip&lt;/code> 格式，TWRP的包为&lt;code>.img&lt;/code> 格式，两个包下载完后都不要进行解压缩或其他操作，将两个包放到任意一个文件夹中。&lt;/p>
+&lt;h2 id="三打开-usb-调试">三、打开 USB 调试&lt;/h2>
+&lt;p>在 &lt;em>&lt;strong>设置 &amp;gt; 关于手机&lt;/strong>&lt;/em> 中，拉到底部，连续点击 &lt;em>&lt;strong>版本号&lt;/strong>&lt;/em>，系统会提示 &lt;em>&lt;strong>已开启开发者模式&lt;/strong>&lt;/em>。&lt;/p>
+&lt;p>进入 &lt;em>&lt;strong>设置 &amp;gt; 开发者选项&lt;/strong>&lt;/em> 中，打开 &lt;em>&lt;strong>OEM 解锁&lt;/strong>&lt;/em> 和 &lt;em>&lt;strong>USB 调试&lt;/strong>&lt;/em>。使用数据线连接手机，在手机屏幕上会弹出提示是否允许当前计算机进行USB 调试，选择允许。在终端中输入 &lt;code>adb devices&lt;/code>，如果连接正常，在 list of devices attached 下方会显示出手机设备的 id。&lt;/p>
+&lt;h2 id="四解锁-bootloader-并输入-twrp-recovery">四、解锁 Bootloader 并输入 TWRP Recovery&lt;/h2>
+&lt;blockquote>
+&lt;p>注意：解锁将清除手机所有数据。&lt;/p>
+&lt;/blockquote>
+&lt;p>在 Shell 中，输入&lt;code>adb reboot bootloader&lt;/code>，手机会重启进入 Bootloader 状态。如果之前没有解锁过，在 Bootloader 中，底部的 DEVICE STATE 会显示为 locked 状态。在 Shell 中，输入 &lt;code>fastboot oem unlock&lt;/code>，手机屏幕将会提示是否解锁，使用音量键选中 YES，按电源键确定，手机将解锁。接着进行下一步。&lt;/p>
+&lt;p>在 Shell 中，输入 &lt;code>fastboot flash recovery&lt;/code> ，不要回车，将下载的 twrp recovery 拖到 Shell 中，构成完整的命令。按下回车，开始刷入。&lt;/p>
+&lt;p>在手机上使用音量上下键，切换到 &lt;em>&lt;strong>Restart bootloader&lt;/strong>&lt;/em> 选项，然后按电源键，重启到 Bootloader，然后再使用音量键，切换到 Recovery mode，按电源键，重启到 Recovery 环境。如果刷入成功，你将看到 TEAMWIN 的 Recovery 启动画面并进入 TWRP Recovery。&lt;/p>
+&lt;h2 id="五安装-supersu">五、安装 SuperSU&lt;/h2>
+&lt;p>在 TWRP Recovery 中，选择 &lt;em>&lt;strong>Reboot &amp;gt; System&lt;/strong>&lt;/em>，重启手机。将下载的 SuperSU 放到手机的 Download 文件夹中。我在 OS X 中使用的 &lt;em>&lt;strong>Android File Transfer&lt;/strong>&lt;/em> 进行文件传输。&lt;/p>
+&lt;p>输入&lt;code>adb reboot recovery&lt;/code>，重启手机，并进入 TWRP Recovery。选择 &lt;em>&lt;strong>Install&lt;/strong>&lt;/em>，进入 Download 文件夹，选择下载的 SuperSU 文件，滑动底部滑块，开始刷入。刷完之后，选择 &lt;em>&lt;strong>Wipe cache/dalvik&lt;/strong>&lt;/em>，然后选择 &lt;em>&lt;strong>Reboot System&lt;/strong>&lt;/em> 进入系统。进入系统后，应用中应该有了 SuperSU，ROOT完成。&lt;/p></description></item><item><title>macOS 使用 ssh key 登陆服务器</title><link>https://maolu.one/posts/login-server-using-ssh-key-on-macos/</link><pubDate>Sat, 18 Jul 2015 13:04:01 +0800</pubDate><guid>https://maolu.one/posts/login-server-using-ssh-key-on-macos/</guid><description>&lt;p>先生成公钥和私钥，在 Mac OSX 终端（或 iTerm 2 等）中进入 ~/.ssh 目录，输入：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ ssh-keygen -t rsa
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>会询问一些问题，直接全部回车，即可在 ~/.ssh 目录中生成 id_rsa（私钥） 和 id_rsa.pub（公钥）文件。我们需要将公钥上传到 testhost 服务器的 ~/.ssh 目录下面，因为第二种方式中我们已经配置了 testhost 服务器，scp 也能识别这个服务器，所以，可以使用如下命令将文件传输到 testhost 服务器中：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ scp ~/.ssh/id_rsa.pub testhost:~/.ssh/
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>接下来，用第二种方式登录到 testhost 服务器中，在 ~/.ssh 目录中使用以下命令将 id_rsa.pub 更名为 authorized_keys：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ mv id_rsa.pub authorized_keys
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>最后确保下文件权限正常：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ chmod &lt;span style="color:#ae81ff">700&lt;/span> ~/.ssh/
+$ chmod &lt;span style="color:#ae81ff">600&lt;/span> ~/.ssh/authorized_keys
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>现在，我们可以在 Mac OSX 的终端中使用 ssh testhost 登录到 testhost 服务器了，无需输入密码，更无需记忆服务器参数。&lt;/p>
+&lt;p>如果无法连接，请在服务器的 /etc/ssh/sshd_config 文件中查看 PubkeyAuthentication 的值是否为 yes，如果不是，请修改为 yes ，并使用以下命令重启 ssh 服务：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ /etc/init.d/ssh restart
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果需要禁止密码登录，同样可以编辑 &lt;em>&lt;strong>/etc/ssh/sshd_config&lt;/strong>&lt;/em> 文件中 &lt;em>&lt;strong>PasswordAuthentication&lt;/strong>&lt;/em> 的值为 &lt;em>&lt;strong>no&lt;/strong>&lt;/em> 并 &lt;em>&lt;strong>重启 ssh 服务&lt;/strong>&lt;/em>。&lt;/p>
+&lt;p>CentOS 7 可能依然无法登陆，提示：Permission denied (publickey,gssapi-keyex,gssapi-with-mic)。解决方式：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ restorecon -r -vv ～/.ssh/authorized_keys
+&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>
