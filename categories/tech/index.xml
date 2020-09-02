@@ -1,41 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tech on 一间茅庐</title><link>https://maolu.one/categories/tech/</link><description>Recent content in Tech on 一间茅庐</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 07 Jul 2020 16:01:23 +0800</lastBuildDate><atom:link href="https://maolu.one/categories/tech/index.xml" rel="self" type="application/rss+xml"/><item><title>使用 Github Pages 的两个小技巧</title><link>https://maolu.one/posts/two-tricks-on-github-pages/</link><pubDate>Tue, 07 Jul 2020 16:01:23 +0800</pubDate><guid>https://maolu.one/posts/two-tricks-on-github-pages/</guid><description>&lt;p>将博客切换到 Hugo 之后，我使用 Github Pages 部署生成的静态网站文件。本文介绍使用 Github Pages 的两个小技巧。&lt;/p>
-&lt;h2 id="一绑定域名到-github-pages-的正确姿势">一、绑定域名到 Github Pages 的正确姿势&lt;/h2>
-&lt;p>&lt;strong>假设你的 Github Pages 地址为 &lt;!-- raw HTML omitted -->username.github.io&lt;!-- raw HTML omitted -->。&lt;/strong>&lt;/p>
-&lt;p>如果你想要绑定的是二级域名，比如 &lt;!-- raw HTML omitted -->&lt;strong>blog.maolu.one&lt;/strong>&lt;!-- raw HTML omitted -->，则需要以下两个步骤：&lt;/p>
-&lt;ol>
-&lt;li>在仓库的根目录创建文件，文件名：&lt;code>CNAME&lt;/code> ，文件内容：&lt;code>blog.maolu.one&lt;/code> ;&lt;/li>
-&lt;li>给域名添加 CNAME 记录，记录名：&lt;code>blog&lt;/code>，记录值：&lt;code>username.github.io&lt;/code> 。&lt;/li>
-&lt;/ol>
-&lt;p>按照以上步骤绑定的二级域名，等待 Github 自动签发好 Let&amp;rsquo;s Encrypt 证书后，可以正常在仓库的 &lt;code>Settings &amp;gt; Github Pages&lt;/code> 中开启 &lt;code>Enforce HTTPS&lt;/code> 选项。对于没有强迫症（不需要开启 Enforce HTTPS 功能），且域名管理服务商支持 CNAME Flattening 的人，也可以按照上述方法绑定根域名，CNAME 记录名为 @。&lt;/p>
-&lt;p>如果你想使用正确姿势绑定是根域名，比如 &lt;!-- raw HTML omitted -->&lt;strong>maolu.one&lt;/strong>&lt;!-- raw HTML omitted -->，就会稍微复杂一些。&lt;/p>
-&lt;ol>
-&lt;li>在仓库的根目录创建文件，文件名：&lt;code>CNAME&lt;/code> ，文件内容：&lt;code>maolu.one&lt;/code> ;&lt;/li>
-&lt;li>给根域名添加 4 个 A 记录，记录名：&lt;code>@&lt;/code>，记录值分别为：185.199.108.153、185.199.109.153、185.199.110.153、185.199.111.153。这些 IP 地址有可能会改变，但频率应该会很低&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup> 。&lt;/li>
-&lt;li>如果你的 www A 记录没有其他用处，建议添加 CNAME 记录名 www，值为 &lt;code>username.github.io&lt;/code> 。&lt;/li>
-&lt;/ol>
-&lt;p>不论哪种类型的域名，仓库根目录的 CNAME 文件的设置会覆盖仓库的 &lt;code>Settings &amp;gt; Github Pages&lt;/code> 中的域名设置。所以如果你在 Setting 中设置了域名，却没有 CNAME 文件，则该设置过一会儿就失效了。&lt;/p>
-&lt;p>如果你的 Github Pages 中的内容是用静态网站生成器生成的，需要注意在每次提交时，是否会移除 CNAME 文件。以 Hugo 为例，在 /static 目录中新增 CNAME 文件是最为保险的方式，因为不论如何提交，都会在网站的根目录也就是仓库的根目录生成此文件。&lt;/p>
-&lt;h2 id="二同一个账号开通多个-github-pages">二、同一个账号开通多个 Github Pages&lt;/h2>
-&lt;p>有很多教程中提到一个 Github 账户只能创建一个 Github Pages 仓库，这样的说法是不对的。因为除了通过创建 username.github.io 来自动创建 Github Pages 仓库的方式，还有其他方式创建 Github Pages 仓库：&lt;/p>
-&lt;ol>
-&lt;li>创建一个普通公开仓库，名称随意。这里假设名称为 &lt;code>another.repo&lt;/code> ；&lt;/li>
-&lt;li>在该仓库中，新增 gh-pages 分支，并将代码提交到此分支；此时，你就拥有了另外一个 Github Pages 仓库了，其网址为 &lt;code>username.github.io/another.repo&lt;/code> ；&lt;/li>
-&lt;li>如同前文提到的绑定域名的方式一样，创建 CNAME 文件、增加 DNS 记录就可以绑定域名。&lt;/li>
-&lt;/ol>
-&lt;p>多个仓库绑定域名的方式如下图所示：&lt;/p>
-&lt;p>&lt;img src="https://images.maolu.one/20200707173114.png" alt="多个 Github Pages 绑定域名">&lt;/p>
-&lt;p>有了多个仓库，我们就可以不需要新建 Github 账号，创建另外的 Github Pages 仓库存放图片、脚本等内容，方便使用 Markdown 写文章时调用&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>。&lt;/p>
-&lt;section class="footnotes" role="doc-endnotes">
-&lt;hr>
-&lt;ol>
-&lt;li id="fn:1" role="doc-endnote">
-&lt;p>&lt;a href="https://docs.github.com/en/github/working-with-github-pages/managing-a-custom-domain-for-your-github-pages-site#configuring-an-apex-domain" target="_blank" >Configuring an apex domain&lt;/a> &lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
-&lt;/li>
-&lt;li id="fn:2" role="doc-endnote">
-&lt;p>例如：&lt;a href="https://molunerfinn.com/typora-supports-picgo/" target="_blank" >Typora 支持 PicGo 来上传图片了&lt;/a> &lt;a href="#fnref:2" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
-&lt;/li>
-&lt;/ol>
-&lt;/section></description></item><item><title>博客切换到 Hugo 的一些记录</title><link>https://maolu.one/posts/switch-blog-to-hugo/</link><pubDate>Mon, 06 Jul 2020 22:37:41 +0800</pubDate><guid>https://maolu.one/posts/switch-blog-to-hugo/</guid><description>&lt;p>因为实在是喜爱当前的这个主题&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup> ，所以这两天将博客改为 Hugo 系统，并且托管在 Github Pages 上，一年还能省四五百块大洋。初次接触 Hugo，颤颤巍巍、如履薄冰，不过最终还是将其搭建并部署起来了。今天基本完善，记录一下中间遇到的一些问题。&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tech on 一间茅庐</title><link>https://maolu.one/categories/tech/</link><description>Recent content in Tech on 一间茅庐</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 06 Jul 2020 22:37:41 +0800</lastBuildDate><atom:link href="https://maolu.one/categories/tech/index.xml" rel="self" type="application/rss+xml"/><item><title>博客切换到 Hugo 的一些记录</title><link>https://maolu.one/posts/switch-blog-to-hugo/</link><pubDate>Mon, 06 Jul 2020 22:37:41 +0800</pubDate><guid>https://maolu.one/posts/switch-blog-to-hugo/</guid><description>&lt;p>因为实在是喜爱当前的这个主题&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup> ，所以这两天将博客改为 Hugo 系统，并且托管在 Github Pages 上，一年还能省四五百块大洋。初次接触 Hugo，颤颤巍巍、如履薄冰，不过最终还是将其搭建并部署起来了。今天基本完善，记录一下中间遇到的一些问题。&lt;/p>
 &lt;h2 id="一hugo-主题的使用">一、Hugo 主题的使用&lt;/h2>
 &lt;p>如果你在 Hugo 的 Git 根目录中使用 &lt;code>git clone&lt;/code> 某个主题到 Hugo 的 themes 目录下，则你在部署到 Github 的时候会遇到问题。例如我现在使用的主题：&lt;/p>
 &lt;pre>&lt;code>$ git clone git@github.com:joway/hugo-theme-yinyang.git themes/yinyang
@@ -117,19 +80,7 @@ disqus = &amp;quot;your_disqus_shortname&amp;quot;
 &lt;p>&lt;a href="https://molunerfinn.com/typora-supports-picgo/" target="_blank" >Typora 支持 PicGo 来上传图片了&lt;/a> &lt;a href="#fnref:5" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
 &lt;/li>
 &lt;/ol>
-&lt;/section></description></item><item><title>解决 Lean 固件编译后无 SSR-Plus 的问题</title><link>https://maolu.one/posts/add-ssr-plus-in-lean-openwrt-firmware/</link><pubDate>Tue, 19 May 2020 12:43:21 +0800</pubDate><guid>https://maolu.one/posts/add-ssr-plus-in-lean-openwrt-firmware/</guid><description>&lt;p>在最近的更新后，Lean 源码中删除了 SSR Plus + 功能模块。在编译路由器固件过程中，进入 Luci-Application 菜单后，找不到 luci-app-ssr-plus 选项，当然也就无法编译这一模块。&lt;/p>
-&lt;p>如果是初次编译，git clone 完成后，修改 feeds.conf.default 文件，将：&lt;/p>
-&lt;pre>&lt;code># src-git helloworld https://github.com/fw876/helloworld
-&lt;/code>&lt;/pre>&lt;p>前面的 # 去掉，修改为：&lt;/p>
-&lt;pre>&lt;code>src-git helloworld https://github.com/fw876/helloworld
-&lt;/code>&lt;/pre>&lt;p>再进行 &lt;code>make menuconfig&lt;/code> 等命令进行编译即可。&lt;/p>
-&lt;p>如果是二次编译，则执行以下命令：&lt;/p>
-&lt;pre>&lt;code>$ git pull
-$ rm -rf ./tmp &amp;amp;&amp;amp; rm -rf .config
-&lt;/code>&lt;/pre>&lt;p>再编辑 feeds.config.default 文件，将 helloworld 一行前的 # 去掉。然后更新 feeds：&lt;/p>
-&lt;pre>&lt;code>$ ./scripts/feeds clean
-$ ./scripts/feeds update -a &amp;amp;&amp;amp; ./scripts/feeds install -a
-&lt;/code>&lt;/pre>&lt;p>再进行 &lt;code>make menuconfig&lt;/code> 等命令进行编译即可。&lt;/p></description></item><item><title>UBNT ER-X 刷 Open-WRT 并作为透明网关</title><link>https://maolu.one/posts/openwrt-on-erx-for-transparent-gateway/</link><pubDate>Tue, 07 Apr 2020 13:04:01 +0800</pubDate><guid>https://maolu.one/posts/openwrt-on-erx-for-transparent-gateway/</guid><description>&lt;p>一直想在家庭网络中增加一个透明网关，达到让网络中所有设备在访问国外网站时自动使用代理的功能。家中本身有一个 3215U + 4 千兆网口的工控机，但嫌弃其电源实在占位置所以没启用。最近才觉察到 UniFi Switch 8 POE 150W 的网口是可以自定义 PoE+ 或 24V Passive PoE 供电的，因为 ER-X 本身体积就小，又支持 24V Passive PoE 供电，这样就可以节省充电器和充电线，仅用一根网线即可供电和数据传输，简约而不简单。&lt;/p>
+&lt;/section></description></item><item><title>UBNT ER-X 刷 Open-WRT 并作为透明网关</title><link>https://maolu.one/posts/openwrt-on-erx-for-transparent-gateway/</link><pubDate>Tue, 07 Apr 2020 13:04:01 +0800</pubDate><guid>https://maolu.one/posts/openwrt-on-erx-for-transparent-gateway/</guid><description>&lt;p>一直想在家庭网络中增加一个透明网关，达到让网络中所有设备在访问国外网站时自动使用代理的功能。家中本身有一个 3215U + 4 千兆网口的工控机，但嫌弃其电源实在占位置所以没启用。最近才觉察到 UniFi Switch 8 POE 150W 的网口是可以自定义 PoE+ 或 24V Passive PoE 供电的，因为 ER-X 本身体积就小，又支持 24V Passive PoE 供电，这样就可以节省充电器和充电线，仅用一根网线即可供电和数据传输，简约而不简单。&lt;/p>
 &lt;h2 id="一编译-er-x-open-wrt-固件">一、编译 ER-X Open-WRT 固件&lt;/h2>
 &lt;p>因为官方 Open-WRT 的固件内容比较素，缺乏必备的 ShadowsocksR Plus 等插件，所以我采用 Lean 的 Open-WRT 固件自行编译。编译此固件是需要编译机可无障碍访问国外部分网站，在虚拟机上使用：&lt;/p>
 &lt;pre>&lt;code>$ export all_proxy=&amp;quot;socks5://your.proxy:1080&amp;quot;
